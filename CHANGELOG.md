@@ -4,6 +4,22 @@ Versions preserve source snapshots and, from 0.2.0, prepared downloadable previe
 
 ## Unreleased
 
+## 0.2.1 — 2026-10-08 (development preview)
+
+- High Power charge fill is lighter purple with a contrasting grey empty area;
+  menu-bar fast-forward marks removed.
+- Significant-energy parser filters unnamed system coalitions instead of
+  rejecting valid responses or discarding named apps alongside them.
+- Selected Energy Mode circles are blue for Automatic, yellow for Low Power,
+  and purple for High Power; thin outlines and readable symbols.
+- Neutral macOS hover highlights replace colored row backgrounds.
+- Publisher supports versioned updates to the existing Homebrew tap.
+
+Verification: 171 executable checks, actual energy query, rendered UI fixtures,
+and source-matched release/helper signatures and ZIP round-trip. Development
+preview remains ad-hoc signed, not notarized; fresh-install helper approval,
+switching and restart persistence remain unverified.
+
 ## 0.2.0 — 2026-10-08 (development preview)
 
 - Smaller grey menu details, tighter spacing, slimmer icons, centred High Power

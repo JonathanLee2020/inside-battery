@@ -23,15 +23,14 @@ final class EnergyModeRow: NSView {
         guard let item else { return }
         let highlighted = hovered && item.isEnabled
         if highlighted {
-            NSColor.selectedContentBackgroundColor.setFill()
+            NSColor.unemphasizedSelectedContentBackgroundColor.setFill()
             NSBezierPath(roundedRect: bounds.insetBy(dx: 4, dy: 1), xRadius: 5, yRadius: 5).fill()
         }
         item.image?.draw(in: NSRect(x: 14, y: bounds.midY - 14, width: 28, height: 28),
                          from: .zero, operation: .sourceOver, fraction: item.isEnabled ? 1 : 0.4)
         let title = NSAttributedString(string: item.title, attributes: [
             .font: NSFont.menuFont(ofSize: 13),
-            .foregroundColor: !item.isEnabled ? NSColor.disabledControlTextColor
-                : highlighted ? NSColor.selectedMenuItemTextColor : NSColor.labelColor
+            .foregroundColor: !item.isEnabled ? NSColor.disabledControlTextColor : NSColor.labelColor
         ])
         title.draw(at: NSPoint(x: 50, y: bounds.midY - title.size().height / 2))
     }

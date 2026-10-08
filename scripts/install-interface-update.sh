@@ -3,7 +3,7 @@
 set -eu
 PROJECT='/Users/jonathanlee/Documents/projects/mac_battery'
 APP="$PROJECT/dist/Inside Battery.app"
-STAGED="$PROJECT/.build/interface-updates/automatic-status-width-2026-10-08/Inside Battery.app"
+STAGED="${STAGED:-$PROJECT/.build/interface-updates/automatic-status-width-2026-10-08/Inside Battery.app}"
 
 GUI_SERVICES=$(/bin/launchctl print "gui/$(/usr/bin/id -u)")
 if printf '%s\n' "$GUI_SERVICES" | /usr/bin/grep -q 'application\.com\.insidebattery\.app\.'; then

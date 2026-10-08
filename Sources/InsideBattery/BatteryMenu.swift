@@ -43,13 +43,24 @@ enum BatteryMenu {
         return view
     }
 
+    static func selectionColor(for mode: PowerMode) -> NSColor {
+        switch mode {
+        case .automatic: .systemBlue
+        case .low: .systemYellow
+        case .high: BatteryIcon.highPowerColor
+        }
+    }
+
     static func modeImage(_ mode: PowerMode, selected: Bool, appearance: NSAppearance? = nil) -> NSImage {
         let ink: NSColor = appearance?.bestMatch(from: [.aqua, .darkAqua]) == .darkAqua ? .white : .black
+        let selectionColor = selectionColor(for: mode)
         let image = NSImage(size: NSSize(width: 28, height: 28), flipped: false) { bounds in
-            (selected ? NSColor.systemBlue : ink.withAlphaComponent(0.25)).setFill()
+            (selected ? selectionColor : ink.withAlphaComponent(0.25)).setFill()
             NSBezierPath(ovalIn: bounds.insetBy(dx: 1, dy: 1)).fill()
-            let color = selected ? NSColor.white : ink
-            let outlineColor = selected ? NSColor.white
+            let color = selected ? (mode == .automatic ? NSColor.white : .black) : ink
+            let outlineColor = selected
+                ? (mode == .automatic ? NSColor(srgbRed: 0.80, green: 0.88, blue: 0.94, alpha: 1)
+                   : NSColor.black.withAlphaComponent(0.65))
                 : NSColor(srgbRed: 0.60, green: 0.60, blue: 0.62, alpha: 1)
             outlineColor.setStroke()
             outlineColor.setFill()

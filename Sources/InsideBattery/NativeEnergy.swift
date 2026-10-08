@@ -65,13 +65,17 @@ enum NativeEnergy {
         var seen = Set<String>()
         var apps: [EnergyApp] = []
         for index in identifiers.indices {
+            // The response includes system coalitions with no display name.
+            // They are energy records, but not entries in the app list.
+            let name = names[index].trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !name.isEmpty else { continue }
             // Coalitions group helpers under their responsible application.
             let identifier = validIdentifier(responsible[index]) ? responsible[index] : identifiers[index]
-            guard validIdentifier(identifier), !names[index].trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            guard validIdentifier(identifier) else {
                 throw EnergyError.unavailable("The native energy response contains an invalid app identity.")
             }
             if seen.insert(identifier).inserted {
-                apps.append(EnergyApp(bundleIdentifier: identifier, name: names[index]))
+                apps.append(EnergyApp(bundleIdentifier: identifier, name: name))
             }
         }
         return apps

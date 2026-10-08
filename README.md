@@ -4,22 +4,32 @@ A tiny, native macOS menu-bar app that puts the percentage **inside** its batter
 
 ## Downloads and package managers
 
-Version **0.2.0** is available as an **Apple Silicon development preview**, with
+Version **0.2.1** is available as an **Apple Silicon development preview**, with
 a ZIP archive and SHA-256 manifest on
-[GitHub Releases](https://github.com/JonathanLee2020/inside-battery/releases/tag/v0.2.0).
+[GitHub Releases](https://github.com/JonathanLee2020/inside-battery/releases/tag/v0.2.1).
 macOS 13 or newer is required; Intel builds are not included.
 
 The preview is ad-hoc signed, not Developer ID signed or notarized. Gatekeeper
 may block downloaded copies. Fresh-install helper approval, power switching,
 and persistence after restarting are unverified for the release build. The
 development Mac uses a temporary helper recovery, not a public installer.
-Read [the release notes](packaging/releases/v0.2.0.md) before installing.
+Read [the release notes](packaging/releases/v0.2.1.md) before installing.
 
 The Homebrew preview command is:
 
 ```sh
 brew install --cask JonathanLee2020/inside-battery/inside-battery
 ```
+
+For an existing Homebrew installation, quit Inside Battery and run:
+
+```sh
+brew update
+brew upgrade --cask JonathanLee2020/inside-battery/inside-battery
+```
+
+For manual installation, download the ZIP from the release page, extract it,
+move the complete app to Applications and open it. Avoid multiple app copies.
 
 This is our own tap, not an official Homebrew Cask listing. Quarantine and macOS
 helper approval remain in place. The [local MacPorts recipe](packaging/macports/README.md)
@@ -190,8 +200,8 @@ Generated apps, Swift build artifacts, and local environment files
 are excluded from Git. See [CHANGELOG.md](CHANGELOG.md) for each version's changes
 and verification limits.
 
-The initial snapshot is tagged `v0.1.0`. Version `v0.2.0` is published from
-`release/v0.2.0` as a prerelease with download assets. Publication never pushes
+The initial snapshot is tagged `v0.1.0`. Version `v0.2.1` is published from
+`release/v0.2.1` as a prerelease with download assets. Publication never pushes
 directly to `main`. No source license has been
 selected; publishing source does not itself grant a reuse license.
 
@@ -214,7 +224,7 @@ undoing a specific published change, so shared history remains intact.
 
 The working app remains at `dist/Inside Battery.app`. Release preparation builds
 a separate source-matched app/client/helper set in `.build/release-staging`,
-tests it, and archives it under `dist/releases/v0.2.0`. Checksum-pinned recipes
+tests it, and archives it under `dist/releases/v0.2.1`. Checksum-pinned recipes
 are generated from those exact bytes. The release helper pair differs from the
 development Mac's preserved original pair and needs desktop install testing.
 Developer ID signing, notarization, fresh-install/restart verification and

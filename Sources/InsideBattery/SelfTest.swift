@@ -47,7 +47,12 @@ enum SelfTest {
                let corner = bitmap.colorAt(x: 0, y: 0),
                let rim = bitmap.colorAt(x: bitmap.pixelsWide / 8, y: bitmap.pixelsHigh / 2)?.usingColorSpace(.sRGB) {
                 checks.append((corner.alphaComponent < 0.1, "selected \(mode.title) icon has transparent corners"))
-                checks.append((rim.blueComponent > rim.redComponent + 0.3, "selected \(mode.title) icon has a blue circular background"))
+                let expectedHue: Bool = switch mode {
+                case .automatic: rim.blueComponent > rim.redComponent + 0.3
+                case .low: rim.redComponent > 0.7 && rim.greenComponent > 0.5 && rim.blueComponent < 0.4
+                case .high: rim.blueComponent - rim.greenComponent > 0.2 && rim.redComponent - rim.greenComponent > 0.1
+                }
+                checks.append((expectedHue, "selected \(mode.title) circle uses its energy-mode color"))
                 if mode == .automatic, let center = bitmap.colorAt(x: bitmap.pixelsWide / 2, y: bitmap.pixelsHigh / 2)?.usingColorSpace(.sRGB) {
                     checks.append((center.redComponent > 0.9 && center.greenComponent > 0.9 && center.blueComponent > 0.9,
                                    "selected Automatic icon retains a white battery rather than a blue square"))
@@ -60,7 +65,20 @@ enum SelfTest {
                 "responsible_bundle_identifiers": ["com.apple.Safari", "com.apple.Safari", ""],
                 "display_names": ["Safari", "Safari", "Editor"]
             ])
+            let systemOnly = try NativeEnergy.parse([
+                "bundle_identifiers": ["com.apple.WindowServer"],
+                "responsible_bundle_identifiers": [""],
+                "display_names": [""]
+            ])
+            let mixedCoalitions = try NativeEnergy.parse([
+                "bundle_identifiers": ["com.apple.WindowServer", "com.apple.Safari", "com.example.background"],
+                "responsible_bundle_identifiers": ["", "com.apple.Safari", ""],
+                "display_names": ["", "Safari", " \n "]
+            ])
             checks += [
+                (systemOnly.isEmpty, "unnamed native system coalitions are not displayed as significant-energy apps"),
+                (mixedCoalitions == [EnergyApp(bundleIdentifier: "com.apple.Safari", name: "Safari")], "unnamed coalitions do not discard named apps in the same response"),
+                ((try? NativeEnergy.parse(["bundle_identifiers": ["invalid;openTab:CPU"], "responsible_bundle_identifiers": [""], "display_names": ["Named App"]])) == nil, "named energy apps with invalid identities still fail validation"),
                 (apps.count == 2, "native energy coalitions deduplicate responsible apps"),
                 (apps.first == EnergyApp(bundleIdentifier: "com.apple.Safari", name: "Safari"), "browser helpers are attributed to their native responsible app"),
                 (apps.last?.bundleIdentifier == "com.example.Editor", "native energy falls back to the supplied app ID when responsible ID is absent"),
@@ -135,12 +153,13 @@ enum SelfTest {
         let highPlugged = BatteryState(percentage: 73, isCharging: false, isExternalPowerConnected: true, isHighPowerMode: true)
         let highFill = BatteryIcon.colors(for: highPower, appearance: appearance).progress.usingColorSpace(.sRGB)!
         let highLuminance = luminance(highFill)
+        let highEmptyLuminance = luminance(BatteryIcon.colors(for: highPower, appearance: appearance).surface)
         checks += [
-            (highFill.blueComponent - highFill.greenComponent >= 0.4, "High Power fill remains visibly violet"),
-            (1.05 / (highLuminance + 0.05) >= 2, "High Power fill remains distinct against white"),
+            (highFill.blueComponent - highFill.greenComponent >= 0.2 && highFill.redComponent - highFill.greenComponent >= 0.1, "lighter High Power fill remains visibly violet"),
+            ((highLuminance + 0.05) / (highEmptyLuminance + 0.05) >= 1.4, "High Power charge fill remains distinct from the empty remainder"),
             (highPower.accessibilityLabel.contains("High Power Mode"), "announces High Power to VoiceOver"),
             (!BatteryState(percentage: 52, isCharging: false, isLowPowerMode: true, isHighPowerMode: true).isHighPowerMode, "Low Power takes precedence over stale High Power state"),
-            (BatteryIcon.colors(for: highCharging, appearance: appearance).progress == BatteryIcon.colors(for: active, appearance: appearance).progress, "High Power preserves charging green"),
+            (BatteryIcon.colors(for: highCharging, appearance: appearance).progress == highFill, "High Power retains its purple charge fill while charging"),
             ((try? PowerHelperIdentity.requirement(hash: String(repeating: "a", count: 40))) != nil, "accepts exact valid signature hash"),
             ((try? PowerHelperIdentity.requirement(hash: "a\" or true")) == nil, "rejects injected signature requirement"),
             (PowerMode(rawValue: 99) == nil && PowerProfile(rawValue: "-a") == nil, "rejects unknown helper inputs")

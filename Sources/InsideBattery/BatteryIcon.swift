@@ -2,18 +2,19 @@ import AppKit
 
 enum BatteryIcon {
     static let size = NSSize(width: 35, height: 18)
+    static let highPowerColor = NSColor(srgbRed: 0.86, green: 0.69, blue: 0.98, alpha: 1)
 
     // Black numerals stay readable over both the grey remainder and the charge fill.
     static func colors(for state: BatteryState, appearance: NSAppearance?) -> (surface: NSColor, number: NSColor, progress: NSColor) {
         let surface = state.isHighPowerMode && state.isPresent
-            ? NSColor(srgbRed: 0.78, green: 0.53, blue: 0.94, alpha: 1)
+            ? NSColor(srgbRed: 0.62, green: 0.62, blue: 0.66, alpha: 1)
             : NSColor(srgbRed: 0.72, green: 0.72, blue: 0.72, alpha: 1)
         // Use the native system yellow, matching macOS's semantic Low Power color.
         let progress = state.isLowPowerMode && state.isPresent ? NSColor.systemYellow
+            : state.isHighPowerMode && state.isPresent
+            ? highPowerColor
             : state.isExternalPowerConnected && state.isPresent
             ? NSColor(srgbRed: 0.35, green: 0.95, blue: 0.5, alpha: 1)
-            : state.isHighPowerMode && state.isPresent
-            ? NSColor(srgbRed: 0.79, green: 0.55, blue: 0.96, alpha: 1)
             : NSColor(srgbRed: 0.9, green: 0.9, blue: 0.9, alpha: 1)
         return (surface, .black, progress)
     }
@@ -47,26 +48,13 @@ enum BatteryIcon {
 
         // Keep the silhouette visible against a light menu bar, including at 100%.
         (state.isHighPowerMode && state.isPresent
-            ? NSColor(srgbRed: 0.72, green: 0.43, blue: 0.89, alpha: 1)
+            ? NSColor(srgbRed: 0.76, green: 0.52, blue: 0.92, alpha: 1)
             : NSColor.black.withAlphaComponent(0.35)).setStroke()
         bodyPath.lineWidth = state.isHighPowerMode && state.isPresent ? 1.5 : 0.75
         bodyPath.stroke()
 
         palette.surface.setFill()
         NSBezierPath(roundedRect: NSRect(x: 27, y: 6.5, width: 1.5, height: 5), xRadius: 0.75, yRadius: 0.75).fill()
-        if state.isHighPowerMode && state.isPresent {
-            // A tiny fast-forward mark replaces the terminal, leaving the plug/
-            // bolt slot free within the compact status-item width.
-            palette.number.setStroke()
-            let chevrons = NSBezierPath()
-            for x: CGFloat in [25.5, 27] {
-                chevrons.move(to: NSPoint(x: x, y: 7))
-                chevrons.line(to: NSPoint(x: x + 1.25, y: 9))
-                chevrons.line(to: NSPoint(x: x, y: 11))
-            }
-            chevrons.lineWidth = 1
-            chevrons.stroke()
-        }
         if state.isExternalPowerConnected && state.isPresent {
             // Keep a fixed-size accessory slot beside the battery terminal.
             let dark = appearance?.bestMatch(from: [.aqua, .darkAqua]) == .darkAqua

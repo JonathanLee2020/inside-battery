@@ -2,6 +2,21 @@
 
 Updated: 8 October 2026. There is one app build: `dist/Inside Battery.app`.
 
+## Release preparation — 0.2.1
+
+User authorized publishing current UI and energy-parser fixes as newest release.
+Source branch `release/v0.2.1`; archive built separately from running app at
+`dist/releases/v0.2.1/InsideBattery-0.2.1-arm64.zip`, 205314 bytes, SHA-256
+`e9d0b3147a8976c87bce83cc89cf079fbe59c8c0af18b6234d83f5076460d84a`.
+171 checks, signature pinning and ZIP round-trip pass. Homebrew recipe parses
+0.2.1; MacPorts lint has 0 errors/0 warnings (installed port definitions are old).
+Publisher reads plist version and can update an existing public tap. It creates
+a release branch and fast-forwards an existing non-main tap default branch so
+existing brew update users receive changes. No direct main push or force push.
+Development-preview restrictions remain: no Developer ID/notarization or tested
+fresh-install helper approval/switching/restart. Live dist helper pair unchanged.
+Publication pending; update this section with verified public URLs after success.
+
 ## Published release — 0.2.0
 
 User requested downloadable versions and Homebrew/MacPorts distribution.
@@ -46,6 +61,80 @@ parsing passes without a recipe deprecation warning. No package installation
 test has run. Original app still uses the working temporary helper.
 
 ## Current runtime rollback
+
+NEUTRAL ENERGY MODE HOVER INSTALLED: user reversed colored hover request after
+providing native battery reference. EnergyModeRow uses macOS semantic neutral
+unemphasizedSelectedContentBackgroundColor and normal labelColor text; explicit
+mode constructor removed. Selected icon circles remain blue/yellow/purple.
+This matches the neutral native style; no claim of using Apple's private battery
+control. All three row renders inspected, build and installed 171 checks pass.
+Original helper/client unchanged, signature verified, app reopened after quit.
+Backup: `.build/rollback-backups/interface-install.ikwNly/Inside Battery.app`.
+No new commit or published release.
+
+ENERGY MODE HOVER COLORS INSTALLED: EnergyModeRow now stores its explicit mode
+and draws hover with BatteryMenu.selectionColor(for:), shared with selected icon
+circles. Automatic blue, Low Power yellow, High Power lighter purple. Hover title
+is black on yellow/purple, native selected text on blue. Rounded highlight shape,
+mouse activation and menu tracking unchanged. All three actual row draw methods
+rendered and inspected; build and installed 171 checks pass. Original helper/client
+unchanged, signatures verified, app reopened after user quit. Backup:
+`.build/rollback-backups/interface-install.gY1Uu2/Inside Battery.app`.
+No new commit or published release.
+
+ENERGY MODE SELECTION COLORS INSTALLED: selected Automatic circle stays blue,
+Low Power uses system yellow, High Power shares BatteryIcon.highPowerColor
+(lighter purple) with the menu-bar fill. Low/High use black inner symbols and
+65%-black thin outlines for contrast; Automatic retains white interior and pale
+outline. Unselected circles unchanged. Render inspected, build and 171 checks
+pass; selected-circle pixel checks now verify each mode's hue. Installed main
+only after user quit, signatures verified, original helper/client unchanged,
+reopened successfully. Backup:
+`.build/rollback-backups/interface-install.Kdqb26/Inside Battery.app`.
+No new commit or published release.
+
+SELECTED OUTLINE CONTRAST CORRECTION INSTALLED: shared grey outline was too dark
+against blue selection. Native screenshot shows a pale outline. Selected border
+and terminal now use pale blue-grey RGB 0.80/0.88/0.94, preserving 1 pt thickness,
+blue circle and white interior; unselected stays grey. Render inspected, build
+and installed 171 checks pass; original helper/client byte-identical, app reopened.
+Backup: `.build/rollback-backups/interface-install.yAaV6X/Inside Battery.app`.
+No new commit or published release.
+
+MATCHING ENERGY MODE OUTLINES INSTALLED: selected icon appeared thicker due to
+white outline; both states already used 1 pt strokes. Selected now uses the same
+grey outline/terminal RGB 0.60/0.60/0.62 as unselected, retaining blue circle and
+white interior symbol. Before/after render inspected, build and 171 checks pass.
+Installed main only after user quit, signatures verified, original helper/client
+unchanged, reopened successfully. Backup:
+`.build/rollback-backups/interface-install.O5aehk/Inside Battery.app`.
+No new commit or published release.
+
+ENERGY LIST PARSER FIX INSTALLED: live `--print-energy-apps` reproduced
+"The native energy response contains an invalid app identity." A raw query
+returned WindowServer with empty responsible ID and display name. Parser now
+filters unnamed coalitions before app identity validation, without a process-name
+special case. Named invalid identities and malformed response arrays still fail.
+Regression fixtures cover system-only, mixed named/unnamed, and invalid named
+records. Build and 171 checks pass. Both staged and installed executable return
+"No apps using significant energy" against current live macOS data, exit 0.
+Installed main only after user quit; original client/helper unchanged, signature
+verified, app reopened successfully. Backup:
+`.build/rollback-backups/interface-install.5fsbnB/Inside Battery.app`.
+No new commit or published release; v0.2.0 download predates this fix.
+
+HIGH POWER PROGRESS VISIBILITY INSTALLED: user reported High Power appearing
+full despite partial charge. Rendered before/after fixtures at 25/50/73/95/100%
+reproduced near-identical purple fill and remainder. High Power now uses lighter
+purple fill RGB 0.86/0.69/0.98 against grey remainder 0.62/0.62/0.66, including
+while charging; purple outline lightened. Fill/remainder luminance contrast is
+1.465:1. Menu-bar chevrons removed; Energy Mode row symbols unchanged.
+Initial self-check failed the old dark-purple color expectation; color checks
+updated to require visibly violet light fill, contrasting remainder, and purple
+while charging. Build and 168 checks pass. Installed main executable only after
+user quit; signature verified and original helper/client compared byte-for-byte.
+Backup: `.build/rollback-backups/interface-install.ds3Zj2/Inside Battery.app`.
+Reopening now succeeds with Full access. No new commit or download release.
 
 STATUS WIDTH CORRECTION INSTALLED: user screenshot showed oversized highlighted
 area after the fixed 49 pt status-item change. Restored NSStatusItem.variableLength

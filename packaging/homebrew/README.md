@@ -1,10 +1,21 @@
 # Inside Battery Homebrew tap
 
-After the tap and v0.2.0 release have been published:
+Install the latest development preview (0.2.1):
 
 ```sh
 brew install --cask JonathanLee2020/inside-battery/inside-battery
 ```
+
+To upgrade an existing Homebrew install, quit Inside Battery, then run:
+
+```sh
+brew update
+brew upgrade --cask JonathanLee2020/inside-battery/inside-battery
+```
+
+Alternatively, download the ZIP from
+[GitHub Releases](https://github.com/JonathanLee2020/inside-battery/releases/tag/v0.2.1),
+extract it, and move the complete app to Applications.
 
 This is an Apple Silicon development preview, not an official `homebrew/cask`
 listing. It is ad-hoc signed and not notarized. macOS Gatekeeper can prevent it
