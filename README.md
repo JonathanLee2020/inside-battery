@@ -18,6 +18,7 @@ Read [the release notes](packaging/releases/v0.2.1.md) before installing.
 The Homebrew preview command is:
 
 ```sh
+brew tap JonathanLee2020/inside-battery
 brew install --cask JonathanLee2020/inside-battery/inside-battery
 ```
 

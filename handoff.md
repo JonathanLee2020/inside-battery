@@ -2,7 +2,7 @@
 
 Updated: 8 October 2026. There is one app build: `dist/Inside Battery.app`.
 
-## Release preparation — 0.2.1
+## Published release — 0.2.1
 
 User authorized publishing current UI and energy-parser fixes as newest release.
 Source branch `release/v0.2.1`; archive built separately from running app at
@@ -15,7 +15,15 @@ a release branch and fast-forwards an existing non-main tap default branch so
 existing brew update users receive changes. No direct main push or force push.
 Development-preview restrictions remain: no Developer ID/notarization or tested
 fresh-install helper approval/switching/restart. Live dist helper pair unchanged.
-Publication pending; update this section with verified public URLs after success.
+Published prerelease: https://github.com/JonathanLee2020/inside-battery/releases/tag/v0.2.1
+Release source commit `8b9baf4`; public ZIP downloaded and checksum matched.
+Tap commit `0845d82` initially updated release/v0.2.1 and fast-forwarded its
+existing default branch release/v0.2.0. Current default cask is 0.2.1.
+Initial `brew fetch --cask` failed because the tap must be added explicitly.
+After `brew tap JonathanLee2020/inside-battery`, fetch passed and cached ZIP
+checksum matches. Install docs/release body now include explicit brew tap first.
+No app installation performed in that verification. Current working local app
+was not replaced. Both ZIP and Homebrew deliver the same development preview.
 
 ## Published release — 0.2.0
 

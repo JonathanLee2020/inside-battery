@@ -3,6 +3,7 @@
 Install the latest development preview (0.2.1):
 
 ```sh
+brew tap JonathanLee2020/inside-battery
 brew install --cask JonathanLee2020/inside-battery/inside-battery
 ```
 

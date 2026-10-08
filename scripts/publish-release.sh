@@ -81,5 +81,6 @@ case "$TAP_DEFAULT" in
 esac
 gh repo view "$TAP_REPO" --json url --jq .url
 echo 'Published Homebrew preview command:'
+echo 'brew tap JonathanLee2020/inside-battery'
 echo 'brew install --cask JonathanLee2020/inside-battery/inside-battery'
 echo 'MacPorts recipe is local only; no official registry submission was made.'
