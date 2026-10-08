@@ -85,6 +85,17 @@ enum PowerModeController {
     }
 
     static func set(_ mode: PowerMode, profile: PowerProfile) throws {
+        try runClient(arguments: [String(mode.rawValue), profile.rawValue])
+        guard try readPreferences().mode(for: profile) == mode else {
+            throw PowerError.message("The saved power mode did not match the requested mode. Open Battery Settings to check it.")
+        }
+    }
+
+    static func checkHelperConnection() throws {
+        try runClient(arguments: ["--check"])
+    }
+
+    private static func runClient(arguments: [String]) throws {
         let client = Bundle.main.bundleURL.appendingPathComponent("Contents/Helpers/InsideBatteryPowerClient")
         guard FileManager.default.isExecutableFile(atPath: client.path) else {
             throw PowerError.message("The quick-switch helper is missing. Rebuild and install the complete app bundle.")
@@ -92,7 +103,7 @@ enum PowerModeController {
         let process = Process()
         let output = Pipe()
         process.executableURL = client
-        process.arguments = [String(mode.rawValue), profile.rawValue]
+        process.arguments = arguments
         process.standardOutput = output
         process.standardError = output
         try process.run()
@@ -106,9 +117,6 @@ enum PowerModeController {
                     : detail)
             }
             throw PowerError.message(detail.isEmpty ? "The power client exited with status \(process.terminationStatus)." : detail)
-        }
-        guard try readPreferences().mode(for: profile) == mode else {
-            throw PowerError.message("The saved power mode did not match the requested mode. Open Battery Settings to check it.")
         }
     }
 

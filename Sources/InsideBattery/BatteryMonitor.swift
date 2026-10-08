@@ -74,19 +74,25 @@ final class BatteryMonitor {
             let type = description[kIOPSTypeKey] as? String
             guard type == kIOPSInternalBatteryType else { continue }
 
-            return state(from: description, lowPowerMode: ProcessInfo.processInfo.isLowPowerModeEnabled)
+            let adapter = IOPSCopyExternalPowerAdapterDetails()?.takeRetainedValue() as? [String: Any]
+            return state(from: description, lowPowerMode: ProcessInfo.processInfo.isLowPowerModeEnabled,
+                         adapterDetails: adapter)
         }
 
         return .unavailable
     }
 
-    nonisolated static func state(from description: [String: Any], lowPowerMode: Bool = false) -> BatteryState {
+    nonisolated static func state(from description: [String: Any], lowPowerMode: Bool = false, adapterDetails: [String: Any]? = nil) -> BatteryState {
         let current = description[kIOPSCurrentCapacityKey] as? Int ?? 0
         let maximum = description[kIOPSMaxCapacityKey] as? Int ?? 100
         let percentage = maximum > 0 ? Int((Double(current) / Double(maximum) * 100).rounded()) : current
         let charging = description[kIOPSIsChargingKey] as? Bool ?? false
         let externalPower = description[kIOPSPowerSourceStateKey] as? String == kIOPSACPowerValue
-        return BatteryState(percentage: percentage, isCharging: charging, isExternalPowerConnected: externalPower, isLowPowerMode: lowPowerMode)
+        let watts = adapterDetails?[kIOPSPowerAdapterWattsKey] as? Int
+        let minutes = description[kIOPSTimeToFullChargeKey] as? Int
+        return BatteryState(percentage: percentage, isCharging: charging, isExternalPowerConnected: externalPower,
+                            isLowPowerMode: lowPowerMode, chargerCapacityWatts: watts,
+                            minutesUntilFull: minutes)
     }
 
     enum MonitorError: LocalizedError {

@@ -1,6 +1,31 @@
 # Changelog
 
-Versions identify source snapshots, not downloadable app releases.
+Versions preserve source snapshots and, from 0.2.0, prepared downloadable previews.
+
+## Unreleased
+
+## 0.2.0 — 2026-10-08 (development preview)
+
+- Smaller grey menu details, tighter spacing, slimmer icons, centred High Power
+  arrows, lighter purple, and automatic compact menu-bar sizing.
+- Energy Mode mouse clicks keep the menu open without dimming during switching.
+- Optional saved time-until-full display using macOS estimates.
+- Prepared Apple Silicon ZIP/checksums, Homebrew tap cask, local MacPorts recipe,
+  and optional Developer ID signing/notarization preparation.
+
+- Wait for Service Management's asynchronous unregister completion before
+  re-registering the helper. Setup now verifies an authenticated, read-only XPC
+  response before reporting success. Add Terminal repair/status/connection
+  diagnostics for desktop verification of failed helper registrations.
+
+- Show the connected charger's reported wattage capability in the battery menu
+  header, clearly labeled Charger capacity. Missing ratings remain unavailable,
+  and unplugging clears the reading. This is not a live power measurement.
+
+Verification: 168 checks, matched helper/client signatures, bundle verification
+and ZIP extraction round-trip. The preview is ad-hoc signed; fresh-install
+helper approval, switching and restart persistence are unverified for its pair.
+Official package-manager acceptance and a stable notarized release are not claimed.
 
 ## 0.1.0 — 2026-10-08
 

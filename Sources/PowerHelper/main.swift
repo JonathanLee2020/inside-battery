@@ -4,6 +4,8 @@ import Darwin
 final class PowerService: NSObject, PowerHelperProtocol {
     private let lock = NSLock()
 
+    func checkConnection(reply: @escaping () -> Void) { reply() }
+
     func setPowerMode(_ value: Int, profile: String, reply: @escaping (String?) -> Void) {
         guard let mode = PowerMode(rawValue: value), let source = PowerProfile(rawValue: profile) else {
             reply("Invalid power mode or power source.")

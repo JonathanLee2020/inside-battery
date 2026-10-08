@@ -13,5 +13,6 @@ enum PowerHelperIdentity {
 }
 
 @objc protocol PowerHelperProtocol {
+    func checkConnection(reply: @escaping () -> Void)
     func setPowerMode(_ mode: Int, profile: String, reply: @escaping (String?) -> Void)
 }

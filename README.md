@@ -2,6 +2,41 @@
 
 A tiny, native macOS menu-bar app that puts the percentage **inside** its battery icon. No Electron or third-party runtime dependencies. Quick power switching uses an optional native privileged helper.
 
+## Downloads and package managers
+
+Version **0.2.0** is prepared as an **Apple Silicon development preview**, with
+a ZIP archive, SHA-256 manifest, and publication script. Downloads live under
+[GitHub Releases](https://github.com/JonathanLee2020/inside-battery/releases)
+once published. macOS 13 or newer is required; Intel builds are not included.
+
+The preview is ad-hoc signed, not Developer ID signed or notarized. Gatekeeper
+may block downloaded copies. Fresh-install helper approval, power switching,
+and persistence after restarting are unverified for the release build. The
+development Mac uses a temporary helper recovery, not a public installer.
+Read [the release notes](packaging/releases/v0.2.0.md) before installing.
+
+After release/tap publication, the Homebrew preview command is:
+
+```sh
+brew install --cask JonathanLee2020/inside-battery/inside-battery
+```
+
+This is our own tap, not an official Homebrew Cask listing. Quarantine and macOS
+helper approval remain in place. The [local MacPorts recipe](packaging/macports/README.md)
+has not been submitted to the official ports tree.
+
+Release preparation never replaces the running app:
+
+```sh
+sh scripts/prepare-release.sh --development
+sh scripts/publish-release.sh
+```
+
+For a future notarized version, install a Developer ID Application certificate,
+store a `notarytool` keychain profile, set `SIGNING_IDENTITY` and `NOTARY_PROFILE`,
+and use `prepare-release.sh --notarized`. Publication currently accepts only
+the reviewed development preview. Existing release archives/tags are not overwritten.
+
 > macOS does not let third-party apps redraw Apple's built-in battery item. Inside Battery adds its own replacement item. Turn off **System Settings → Control Centre → Battery → Show in Menu Bar** to avoid seeing two battery icons.
 
 ## Build and run
@@ -22,6 +57,11 @@ make install
 ```
 
 Click the icon to see charging status, enable launch at login, or quit.
+While connected to external power, the header also shows **Charger capacity:
+96 W** (using the reported value). This is the adapter's capability, not live
+input or battery charging power. A missing rating shows **Unavailable**. The
+reading uses the public IOKit adapter-details API and refreshes with battery
+notifications; no `system_profiler` process is run in the menu.
 
 The menu also offers **Low Power**, **Automatic**, and **High Power** for the
 current power source (battery or power adapter), followed by **Battery Settings…**.
@@ -48,15 +88,16 @@ arbitrary shell command is accepted. The client is a short-lived native process.
 Rebuilds change signature hashes: use **Repair Quick Power Switching…** when
 replacing a build. Only one build can match the registered service; quit other
 copies before switching to the updated app. The menu has no standalone disable action.
-Public distribution still requires
-Developer ID signing and notarization; ad-hoc signatures are development-only.
+Developer ID signing and notarization provide the normal trusted-download
+experience; the current preview remains development-only.
 
 The Android-inspired icon uses bold 10.5-point black tabular numbers inside a
 grey battery. A lighter grey fill shows charge level; when connected to external
 power, that fill turns green and a status symbol appears to the right of the
 battery terminal. Black digits stay readable over both filled and unfilled
-areas. The status item is 36 × 18 points, with the same palette on light and dark
-menu bars and reserved space for the bolt to prevent layout shifts.
+areas. The icon is 30 × 18 points on battery and 35 × 18 on external power,
+with the same palette on light and dark menu bars. Automatic sizing avoids
+reserving an unused charging-symbol slot while unplugged.
 
 The menu distinguishes actively charging from plugged in but not charging (for
 example, when charging is paused). Both plugged-in states show green; actively
@@ -71,7 +112,7 @@ made outside the app in System Settings.
 High Power uses a medium violet battery fill/remainder, a stronger violet
 outline (visible even when the green charging fill reaches 100%), and a small double-chevron beside
 the battery. Charging remains green, and plug/lightning indicators remain
-visible. The icon stays 36 × 18 points. Preferences are read off the main thread
+visible. Preferences are read off the main thread
 so power-mode detection does not delay cable-state rendering.
 
 The menu follows the native Battery layout: a Battery/percentage header, power
@@ -83,6 +124,12 @@ Selection uses a blue circle with a white battery glyph. Empty energy results sh
 only **No Apps Using Significant Energy**; errors show only **Energy data unavailable**
 with details in the tooltip. Opening the menu keeps the saved High Power styling
 instead of clearing it while waiting for a background preference read.
+
+Energy Mode mouse clicks keep the menu open and retain normal brightness while
+switching. Overlapping requests are blocked. The submenu also has **Show Time
+Until Fully Charged**, enabled by default and saved between launches. It formats
+macOS's estimate as minutes or hours and minutes, distinguishes calculating /
+unavailable values, and hides stale estimates when charging stops or completes.
 
 The **Apps Using Significant Energy** section requests Apple's native coalition list when the menu opens,
 not through constant background polling. App rows carry icons and open Activity
@@ -109,6 +156,20 @@ After building, `sh scripts/verify-helper.sh` checks both pinned signature hashe
 rejection of a different executable, and the bundle signature. This is not a
 substitute for testing macOS approval and a real mode switch on the desktop.
 
+If a helper registration fails to launch after replacing a development build,
+repair it from Terminal using the real app bundle:
+
+```sh
+"dist/Inside Battery.app/Contents/MacOS/InsideBattery" --repair-power-helper
+```
+
+Repair waits for asynchronous unregistration to complete before registering.
+Exit 2 means macOS approval is still required in Login Items & Extensions. Exit
+0 means the authenticated helper actually answered a read-only connection check;
+it does not claim that a mode switch has been tested. Other errors exit 1 with
+the failure text. `--check-power-helper` repeats only that read-only check, and
+`--print-helper-status` prints the Service Management registration status.
+
 To render a visual check of fifteen states in both appearances (after building):
 
 ```sh
@@ -123,18 +184,16 @@ also verify rendering and at least 4.5:1 number contrast for both appearances.
 
 ## Source versions
 
-Version tags preserve source snapshots; no app binaries or downloadable releases
-are published. Generated apps, Swift build artifacts, and local environment files
+Version tags preserve source snapshots. The public repository is
+[JonathanLee2020/inside-battery](https://github.com/JonathanLee2020/inside-battery).
+Generated apps, Swift build artifacts, and local environment files
 are excluded from Git. See [CHANGELOG.md](CHANGELOG.md) for each version's changes
 and verification limits.
 
-The initial source snapshot is staged on `initial-import`. To finish creating its
-public GitHub repository from Terminal, run `sh scripts/publish-source.sh`. It
-authenticates if necessary, commits the staged source with a GitHub noreply email,
-creates `v0.1.0`, and pushes `initial-import` and that tag. It does not push to
-`main` or create downloadable app releases. The environment preparing this
-snapshot could not write the commit lock or access GitHub authentication, so
-the public repository and version tag are pending until this command succeeds.
+The initial snapshot is tagged `v0.1.0`. Version 0.2.0 is prepared on
+`release/v0.2.0`; publication pushes that branch and creates a prerelease with
+download assets, never pushing directly to `main`. No source license has been
+selected; publishing source does not itself grant a reuse license.
 
 To inspect an older tagged version without changing the current checkout:
 
@@ -151,13 +210,15 @@ git switch -c restore-v0.1.0 v0.1.0
 Commit or stash any current edits before switching. Prefer `git revert` when
 undoing a specific published change, so shared history remains intact.
 
-## Future distribution
+## Distribution status
 
-The app bundle is built at `dist/Inside Battery.app`. Public binary distribution
-is deferred. If enabled later, the release bundle needs Developer ID signing and
-notarization before publishing.
-
-The simplest package-manager route is a Homebrew tap containing a cask that downloads that signed release zip. MacPorts can use the same release archive, but maintaining both recipes before the first public release adds little value. See [`packaging/homebrew/inside-battery.rb`](packaging/homebrew/inside-battery.rb) for the release-ready template.
+The working app remains at `dist/Inside Battery.app`. Release preparation builds
+a separate source-matched app/client/helper set in `.build/release-staging`,
+tests it, and archives it under `dist/releases/v0.2.0`. Checksum-pinned recipes
+are generated from those exact bytes. The release helper pair differs from the
+development Mac's preserved original pair and needs desktop install testing.
+Developer ID signing, notarization, fresh-install/restart verification and
+package-manager install tests remain required before calling a release stable.
 
 ## Design constraints
 

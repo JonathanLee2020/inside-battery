@@ -1,6 +1,257 @@
 # Inside Battery handoff
 
 Updated: 8 October 2026. There is one app build: `dist/Inside Battery.app`.
+
+## Release preparation — 0.2.0
+
+User requested downloadable versions and Homebrew/MacPorts distribution.
+Prepared an Apple Silicon development-preview ZIP at
+`dist/releases/v0.2.0/InsideBattery-0.2.0-arm64.zip` from the current source with
+a fresh matched helper/client, separate from the working runtime pair. SHA-256:
+`43e560904c309f8cbd52781ed5f4b0ff6a9782413e1be634d06f4781b3fc36dd`.
+168 checks, signature tests and archive extraction round-trip pass. MacPorts
+recipe lints with 0 errors/0 warnings; Homebrew's content loader parses the cask.
+Initial MacPorts lint failed on an unquoted semicolon, corrected in generator.
+Initial Homebrew path loading rejected a file outside an installed tap; parsing
+the trusted local recipe's contents succeeds. Package install tests are pending.
+
+No signing identity is visible in this environment; user is unsure about Apple
+Developer membership. Archive is ad-hoc signed, not notarized. Fresh-install
+helper approval, mode switching and restart persistence remain unverified.
+No global BTM reset, permanent helper installation or current-runtime update
+was performed. The user's working old helper PID 79954 remains running.
+
+`scripts/prepare-release.sh --development` builds in `.build/release-staging`
+and refuses to overwrite an existing archive. Optional Developer ID/notarytool
+preparation uses `--notarized` with signing identity/keychain profile env vars.
+`scripts/write-release-recipes.py` generates checksum-pinned Homebrew and local
+MacPorts recipes. There is no source license grant; MacPorts uses Restrictive.
+
+`scripts/publish-release.sh` expects branch `release/v0.2.0`, checks
+the archive hash, stages an explicit source allowlist and commits the release
+using GitHub noreply metadata, pushes only that branch, publishes GitHub v0.2.0 as a
+prerelease, and creates a separate public `homebrew-inside-battery` tap with
+the release branch as its default. No push to main, official registry submission,
+Gatekeeper bypass, or silent administrator approval occurs. GitHub network/auth
+access fails inside Codex; outside-Terminal publication remains necessary.
+Creating the release branch succeeded, but git add/commit failed with
+`.git/index.lock: Operation not permitted`. No release commit or upload is
+claimed. MacPorts lint now reports 0 errors/0 warnings; Homebrew content-loader
+parsing passes without a recipe deprecation warning. No package installation
+test has run. Original app still uses the working temporary helper.
+
+## Current runtime rollback
+
+STATUS WIDTH CORRECTION INSTALLED: user screenshot showed oversized highlighted
+area after the fixed 49 pt status-item change. Restored NSStatusItem.variableLength
+and removed the unused accessory slot when unplugged: icon canvas is 30 pt on
+battery/unavailable, 35 pt on external power. Closer accessory positions remain.
+168 checks and signatures pass, original helper/client unchanged. Actual native
+status button/pill width awaits desktop confirmation (do not claim measured total).
+Backup: `.build/rollback-backups/interface-install.u19QZp/Inside Battery.app`.
+Automatic reopening again failed; user must reopen as before.
+
+COMPACT MENU-BAR ICON INSTALLED: lightning/plug moved 1 pt toward the battery,
+terminal narrowed slightly to retain a small gap; High Power terminal chevrons
+also compressed to avoid the accessory. Icon canvas narrowed 36 to 35 pt.
+Status item now has an explicit 49 pt width (35 pt image + 14 pt total padding).
+Rendered icons inspected, 168 checks and signatures pass. Original helper/client
+unchanged; backup `.build/rollback-backups/interface-install.RMJaom/Inside Battery.app`.
+Automatic reopening failed in the agent; desktop spacing awaits user confirmation.
+
+MODE BRIGHTNESS UPDATE INSTALLED: mode rows no longer become disabled solely
+because `changingMode` is true, preventing their custom view's 40% opacity /
+disabled text flash during a switch. The action guard still blocks overlapping
+requests; genuinely unavailable modes remain disabled. User confirmed previous
+custom rows keep the menu open, but reported the dimming. 168 checks and
+signatures pass; original helper/client unchanged. Backup:
+`.build/rollback-backups/interface-install.OyOoTS/Inside Battery.app`.
+Reopen failed in the agent; visual no-dimming check remains pending desktop use.
+
+PERSISTENT ENERGY MODE MENU INSTALLED: `EnergyModeRow.swift` provides custom
+mouse-driven menu views for the three mode rows, sends their existing actions
+without standard command selection/dismissal, and draws hover/disabled/selected
+states with accessibility press support. AppDelegate refreshes mode icons in
+place and disables mode clicks during a change. Completion is dispatched into
+default and event-tracking run-loop modes so it can update/re-enable controls
+while the menu remains open. Errors close tracking to present their alert.
+Staged in `.build/interface-updates/persistent-modes-2026-10-08/Inside Battery.app`.
+168 existing checks and signature checks pass. Actual keep-open clicks remain
+unverified through desktop automation; user must confirm after installation.
+Installed after user quit; installer preserved the working original pair.
+Backup: `.build/rollback-backups/interface-install.4ci5tp/Inside Battery.app`.
+Automatic reopen failed in the agent; user must reopen and test switching
+between modes without dismissing the menu. Standard keyboard menu activation
+still uses NSMenu behaviour; keep-open custom activation covers mouse/AX press.
+
+UNPLUGGED PADDING UPDATE INSTALLED: header bottom padding is now uniformly 2 pt;
+on-battery padding reduced from 8 to 2 pt, closing the gap between Power Source:
+Battery and the divider by 6 pt. Connected padding is retained at 2 pt. 168
+self-checks and signatures pass; original helper/client unchanged. Backup:
+`.build/rollback-backups/interface-install.2GoRuh/Inside Battery.app`.
+Automatic reopen failed in the agent; user must reopen to confirm appearance.
+
+SLIMMER BATTERY SHAPES INSTALLED: menu-bar battery body reduced from 25x16 to
+25x14 pt, centred vertically, with a proportional terminal and corner radius.
+Energy Mode battery bodies reduced from 17x10 to 17x8 pt, with shorter fills,
+terminals and centred High Power arrows. Icon widths/circle sizes remain the
+same. A rendered preview of all modes and percentage icons was inspected;
+168 self-checks and signatures pass. Original helper/client unchanged.
+Backup: `.build/rollback-backups/interface-install.CcVzW9/Inside Battery.app`.
+Automatic reopening failed in the agent; user must reopen and check appearance.
+
+GREY ROW SPACING UPDATE INSTALLED: detail row pitch/field height reduced from
+20 to 17 pt for source, charging estimate and charger capacity; header shrinks
+accordingly, retaining title spacing and bottom padding. 168 self-checks and
+installed bundle signature pass, original helper/client unchanged. Backup:
+`.build/rollback-backups/interface-install.cFFaBp/Inside Battery.app`.
+Automatic reopening failed in the agent; desktop appearance awaits user reopen.
+
+HEADER TEXT UPDATE INSTALLED: regular header rows (power source/status, charge
+estimate, charger capacity) changed from 13 pt labelColor to 12 pt
+secondaryLabelColor to follow the native screenshot's smaller grey text.
+Battery title and percentage retain 13 pt semibold labelColor. 168 checks and
+signatures pass; live desktop appearance awaits user confirmation. Original
+client/helper remain unchanged. Backup:
+`.build/rollback-backups/interface-install.GUVWxF/Inside Battery.app`.
+Automatic reopening failed again in the agent; user must open the app manually.
+
+HEADER SPACING UPDATE INSTALLED: connected-power header bottom padding reduced
+from 8 to 2 pt, shrinking the gap below charger capacity by 6 pt. Other row
+spacing and on-battery padding remain the same. Staged in
+`.build/interface-updates/header-spacing-2026-10-08/Inside Battery.app`, passing
+168 checks and signatures. Installer points to this bundle and preserves the
+original helper/client. Installed after user quit. Backup:
+`.build/rollback-backups/interface-install.fjlG9x/Inside Battery.app`.
+Automatic reopening failed with kLSNoExecutableErr; user must reopen the app.
+Desktop appearance confirmation remains pending.
+
+CHARGE ESTIMATE INSTALLED: `Inside Battery` submenu now includes a persistent
+`Show Time Until Fully Charged` toggle (default on, UserDefaults key
+`showTimeUntilFull`). While charging below 100%, header adds a time estimate
+row using public IOKit `kIOPSTimeToFullChargeKey` (minutes). Hours/minutes and
+singular/plural are formatted; -1 shows calculating, missing/invalid estimates
+show unavailable, and paused/unplugged/full/absent batteries hide the row.
+State copies retain valid estimates. Combined Power Adapter/status row remains.
+Staged at `.build/interface-updates/charge-estimate-2026-10-08/Inside Battery.app`.
+168 checks and signature checks pass. Live read: 89%, charging on AC, estimate
+36 minutes until full. GUI/toggle behaviour requires desktop confirmation.
+Installed after user quit GUI. Backup at
+`.build/rollback-backups/interface-install.yzplyi/Inside Battery.app`.
+Installer preserved original helper/client. Automatic reopening failed with
+kLSNoExecutableErr in the agent; user must reopen the real app as before.
+
+LATEST UI INSTALLED: unselected Energy Mode icons now have a grey outline and
+terminal with a white fill in dark appearance; selected icons retain white on
+blue, matching the native selected reference. Header source and charge status
+now share one row, e.g. `Power Source: Power Adapter · Charging`; separate status
+row removed and header height reduced by 20 pt. Charging, Not Charging, and
+Fully Charged source lines were measured and fit within the 282 pt label width.
+153 self-checks pass, a rendered grey-outline preview was visually inspected,
+and the original helper/client remain byte-identical. Backup:
+`.build/rollback-backups/interface-install.PvmF3a/Inside Battery.app`.
+Automatic reopening again failed in the agent; user must reopen the real app.
+
+COSMETIC UPDATE INSTALLED after user quit and clarified that only Energy Mode
+menu icon borders should be thinned. Menu battery outlines are now 1 pt,
+High Power arrows are horizontally centred, and violet colors are lighter.
+Menu-bar border thickness was restored to its previous 1.5 pt in High Power /
+0.75 pt otherwise before installation. Main executable alone was replaced;
+original helper/client are unchanged. 153 checks and signatures pass.
+Backup: `.build/rollback-backups/interface-install.jez0ZC/Inside Battery.app`.
+Automatic reopen from the agent again failed with kLSNoExecutableErr; user
+must open the app as before. Desktop appearance confirmation remains pending.
+
+Pending cosmetic update after user confirmed the updated interface works:
+status battery border reduced from High Power 1.5 pt to uniform 0.75 pt;
+menu battery outline reduced from 1.25 pt to 1 pt; three High Power arrows
+are centred as a group using the battery body's midpoint (previous group
+was 1 pt left of centre); violet surface/fill/outline lightened.
+Staged at `.build/interface-updates/style-2026-10-08/Inside Battery.app`.
+153 checks and signatures pass. A rendered icon preview was inspected at
+`/private/tmp/inside-battery-style-preview.png`. Installer now points to this
+staging bundle and preserves the original client/helper. User has been asked
+to quit the GUI; installation has not happened yet (GUI PID 80633 still active).
+
+UI UPDATE INSTALLED at 10:24 after user quit the GUI and launchctl confirmed its
+application service absent. Replaced only `Contents/MacOS/InsideBattery` with the
+prepared current-source interface and re-signed the outer app. Original helper
+and client remain byte-identical; live helper PID 79954 is still running.
+Installed executable passes 153 self-checks and bundle signature verification.
+This runtime is now current UI + original helper/client, not the exact original
+main binary described in earlier chronological notes below. The source hides
+setup when enabled and contains no Disable Quick Power Switching action.
+Backup: `.build/rollback-backups/interface-install.dxt4SP/Inside Battery.app`.
+Codex `open` failed with kLSNoExecutableErr even though the executable exists
+and self-tests run. User must open the real app from regular Terminal/Finder;
+menu visibility and switching with this updated interface await desktop checks.
+`scripts/install-interface-update.sh` now uses launchctl instead of pgrep to
+check for the running GUI (pgrep cannot list processes in the agent sandbox).
+
+Pending UI-only update: user requested removal of Disable Quick Power Switching
+after enablement. Current source already hides setup when enabled and has no
+disable action. An updated main executable was built and staged in
+`.build/interface-updates/2026-10-08/Inside Battery.app`, passing 153 checks and
+bundle/client/helper signature checks. Its original client/helper are byte-for-byte
+identical to the working runtime pair. Backup of the working app:
+`.build/rollback-backups/menu-update.IF5AoW/Inside Battery.app`.
+Termination of GUI PID 79606 failed with operation not permitted; user was asked
+to quit the GUI. No runtime app files have been replaced. After user quits,
+replace ONLY Contents/MacOS/InsideBattery from staging, re-sign the outer app,
+verify unchanged original helper/client and live PID 79954, then reopen the app.
+Do not run the full build-app.sh: that would rebuild the helper pair.
+
+VERIFIED RECOVERY at 10:20: the user ran the temporary absolute-path diagnostic
+and confirmed that power switching worked in the restored original app.
+launchd spawned PID 79954 from
+`/private/tmp/inside-battery-launch-test.76MBJD/com.insidebattery.power-helper.plist`.
+The signed original helper and its client can therefore successfully perform a
+live mode change when launchd uses the absolute executable path. The failing
+SMAppService BundleProgram resolution remains unrepaired; this temporary load
+does not survive a restart. Preserve the working original app/client/helper
+pair. Do not rebuild in place or describe the permanent registration as fixed.
+
+At 10:17, the user's fresh administrator logs again show launchd failing to
+resolve/execute `Contents/Helpers/InsideBatteryPowerHelper`, before the helper
+handles any request. The original app/client/helper signature checks pass.
+`scripts/test-original-helper-launch.sh` prepares a temporary root-owned
+launchd plist with `Program` set to the original helper's absolute path. It
+unloads only the existing Inside Battery service, then bootstraps that temporary
+definition. This is a diagnostic, not a permanent SMAppService repair; no app
+files or preferences change. Shell syntax and prepare-only/plist validation
+passed. Live execution requires the user's regular Terminal and remains pending.
+Do not claim a successful helper launch or mode switch from preparation alone.
+
+Follow-up at 10:13: the user's administrator `sfltool dumpbtm` output points to
+the correct `dist/Inside Battery.app` and lists the daemon as enabled/allowed,
+with UUID `490F33D0-1C5B-4723-8E81-836BE847BD6D`. The live launchctl service still
+references BTM UUID `C2B7F40D-7294-444D-ADF1-E07F5C2BC608`, has attempted 68
+launches, and reports exit 78 / spawn failed. This establishes a mismatch
+between the dumped background-item record and the live submitted service;
+it does not yet establish why it occurred. A restart is proposed to check
+whether macOS reconstructs the live service from the current record. No
+additional source/bundle changes were made; switching remains unverified.
+
+At the user's request, the actual pre-review app bundle was restored from
+`.build/retired-builds/2026-10-08/main-before-versioning.app` to
+`dist/Inside Battery.app`. The previously running main process was terminated
+before replacement; its launchd application service was confirmed absent. The
+restored executable passes 142 self-checks and the helper/bundle signature checks.
+The replaced bundle is preserved at
+`.build/rollback-backups/2026-10-08-before-original-restore.app`.
+
+This is a binary rollback, not a Git/source rollback: the current source retains
+the newer menu, charger-capacity work, and helper-registration experiments below.
+Those newer UI/features are not present in the restored executable. Rebuilding
+will replace this restored executable with the newer source implementation;
+do not claim that rebuilding reproduces the original bundle. No source edits,
+version tags, or remote commits were discarded or rewritten.
+
+The live registration was still failing with exit 78 even after the user's
+outside-Codex repair printed Enabled. The restored app's original enable/disable
+and macOS approval flow is available for registering its original helper. A live
+mode change after restoration remains unverified. The agent sandbox's service
+lookup denial is separate from the desktop helper's launch failure.
 Review-build support has been removed. Earlier generated variants and the prior
 handoff are archived locally under `.build/retired-builds/` and excluded from Git.
 
@@ -42,6 +293,22 @@ handoff are archived locally under `.build/retired-builds/` and excluded from Gi
 
 ## Important limits
 
+Latest helper investigation: desktop logs confirmed launchd's repeating
+`Could not find and/or execute program ... Contents/Helpers/InsideBatteryPowerHelper`
+and exit 78 (EX_CONFIG), even though the bundled executable exists. The earlier
+repair used synchronous unregister followed immediately by register. Apple's
+SDK documents that this call returns before the process is reaped and only the
+asynchronous completion establishes when re-registration is safe. Repair now
+awaits that completion. This corrects the confirmed lifecycle violation; the
+live stale-registration repair remains pending desktop verification.
+
+Added `--repair-power-helper`, `--check-power-helper`, and `--print-helper-status`.
+The helper protocol's connection check is authenticated with the same pinned
+signature requirements and changes no settings. UI/Terminal setup checks its
+response before reporting success. Pending macOS approval is reported separately.
+Registration errors and helper-side mode errors remain visible. Terminal repair
+must run outside the agent sandbox, which denies mach lookup to this service.
+
 1. Native energy data uses a private `systemstats_get_top_coalitions` ABI, guarded
    to macOS 26.2. Queries occur on menu opening, normally over 120 seconds with
    five results and a minimum score of 60,000. A ten-second UI timeout does not
@@ -56,8 +323,10 @@ handoff are archived locally under `.build/retired-builds/` and excluded from Gi
 3. A client SIGTRAP in an XPC error callback was reproduced and diagnosed from
    crash reports. Callbacks now originate in a nonisolated function. Connection
    failures produce readable errors instead of inheriting the main actor.
-4. No charger-wattage display or live input-power measurement is implemented.
-   The `system_profiler` Wattage field describes adapter capability. Current
+4. The connected-power menu header now shows **Charger capacity: … W** from the
+   public `IOPSCopyExternalPowerAdapterDetails` API. Missing ratings display
+   Unavailable, and unplugging clears the rating. No live input-power measurement
+   is implemented. The `system_profiler` Wattage field describes adapter capability. Current
    telemetry did not expose `PowerTelemetryData.SystemPowerIn` even when connected.
    Battery voltage × current describes battery power, not total adapter input.
 5. Public app downloads are deferred. Developer ID signing and notarization are
@@ -75,7 +344,7 @@ DISABLE_SWIFTPM_SANDBOX=1 sh scripts/build-app.sh
 ```
 
 ```text
-PASS: 149 Inside Battery self-checks
+PASS: 153 Inside Battery self-checks
 PASS: helper's embedded requirement accepts the bundled client
 PASS: helper's embedded requirement rejects a different executable
 PASS: client's pinned helper hash matches the bundled helper
@@ -86,6 +355,14 @@ The signature script intentionally emits a rejection diagnostic for the wrong
 executable. Checks include state parsing, notifications, power preferences and
 commands, native-energy fixtures/event structure, icon rendering and contrast,
 and selected-mode icon pixels. Icon previews were visually inspected.
+The charger-capacity fixtures verify a 96 W reading, preservation across mode
+updates, clearing on unplug, and missing/zero handling. A test that instantiated
+the header crashed with exit 134 in AppKit application registration because the
+headless environment cannot register a GUI process; that UI-only check was
+removed, retaining the data-path checks. The rebuilt self-checks then passed.
+The live adapter reading returned unavailable, and System Information exposed
+no Wattage value during this verification. A real rated value and the new header
+still require desktop verification with a charger whose rating macOS reports.
 
 Default `make test` failed before tests: sandbox cache permissions and a reported
 SDK/compiler mismatch. A source build succeeded with the above configuration,

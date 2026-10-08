@@ -10,6 +10,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private var modeHeading: NSMenuItem?
     private var changingMode = false
     private var helperNeedsRepair = false
+    private var configuringHelper = false
     private let powerHelper = SMAppService.daemon(plistName: PowerHelperIdentity.plist)
     private var helperItem: NSMenuItem?
     private var activeMode: PowerMode?
@@ -21,6 +22,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private var energyRevision = 0
     private var energyTask: Task<Void, Never>?
     private var energyTimeoutTask: Task<Void, Never>?
+    private let showTimeUntilFullKey = "showTimeUntilFull"
+    private var showTimeUntilFull: Bool {
+        UserDefaults.standard.object(forKey: showTimeUntilFullKey) as? Bool ?? true
+    }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         configureMenu()
@@ -50,7 +55,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         menu.delegate = self
         let batteryItem = NSMenuItem(title: "Battery unavailable", action: nil, keyEquivalent: "")
         self.batteryItem = batteryItem
-        batteryItem.view = BatteryMenu.header(for: currentState)
+        batteryItem.view = BatteryMenu.header(for: currentState, showTimeUntilFull: showTimeUntilFull)
         batteryItem.isEnabled = false
         menu.addItem(batteryItem)
         menu.addItem(.separator())
@@ -65,6 +70,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             item.target = self
             item.tag = mode.rawValue
             item.image = BatteryMenu.modeImage(mode, selected: false, appearance: statusItem.button?.effectiveAppearance)
+            item.view = EnergyModeRow(item: item)
             if mode == .high { item.toolTip = "Available on Macs that support High Power Mode." }
             modeItems[mode] = item
             menu.addItem(item)
@@ -95,6 +101,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         launchItem.target = self
         launchItem.state = SMAppService.mainApp.status == .enabled ? .on : .off
         appMenu.addItem(launchItem)
+
+        let estimateItem = NSMenuItem(title: "Show Time Until Fully Charged", action: #selector(toggleTimeUntilFull(_:)), keyEquivalent: "")
+        estimateItem.target = self
+        estimateItem.state = showTimeUntilFull ? .on : .off
+        appMenu.addItem(estimateItem)
 
         let quitItem = NSMenuItem(title: "Quit Inside Battery", action: #selector(quit), keyEquivalent: "q")
         quitItem.target = self
@@ -133,18 +144,36 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         statusItem.button?.image = BatteryIcon.image(for: state, appearance: appearance)
         statusItem.button?.setAccessibilityLabel(state.accessibilityLabel)
         batteryItem?.title = state.accessibilityLabel
-        batteryItem?.view = BatteryMenu.header(for: state)
+        batteryItem?.view = BatteryMenu.header(for: state, showTimeUntilFull: showTimeUntilFull)
+        for (mode, item) in modeItems {
+            item.image = BatteryMenu.modeImage(mode, selected: activeMode == mode, appearance: appearance)
+            item.setAccessibilityValue(activeMode == mode ? "Selected" : "Not selected")
+            (item.view as? EnergyModeRow)?.refresh()
+        }
+    }
+
+    @objc private func toggleTimeUntilFull(_ sender: NSMenuItem) {
+        let enabled = !showTimeUntilFull
+        UserDefaults.standard.set(enabled, forKey: showTimeUntilFullKey)
+        sender.state = enabled ? .on : .off
+        display(currentState)
     }
 
     func menuNeedsUpdate(_ menu: NSMenu) {
         refreshEnergySection(menu)
         monitor?.refresh()
+        refreshPowerModeSection()
+    }
+
+    private func refreshPowerModeSection() {
         switch powerHelper.status {
         case .enabled: helperItem?.title = "Repair Quick Power Switching…"
         case .requiresApproval: helperItem?.title = "Approve Quick Power Switching…"
         default: helperItem?.title = "Enable Quick Power Switching…"
         }
-        helperItem?.isHidden = powerHelper.status == .enabled && !helperNeedsRepair
+        helperItem?.isHidden = powerHelper.status == .enabled && !helperNeedsRepair && !configuringHelper
+        helperItem?.isEnabled = !configuringHelper
+        if configuringHelper { helperItem?.title = "Setting Up Quick Power Switching…" }
         let profile: PowerProfile = currentState.isExternalPowerConnected ? .adapter : .battery
         modeHeading?.toolTip = "Energy mode — \(profile.title)"
         do {
@@ -157,12 +186,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
                 item.state = .off
                 item.image = BatteryMenu.modeImage(mode, selected: selected == mode, appearance: statusItem.button?.effectiveAppearance)
                 item.setAccessibilityValue(selected == mode ? "Selected" : "Not selected")
-                item.isEnabled = !changingMode && !helperNeedsRepair && currentState.isPresent && powerHelper.status == .enabled
+                // Keep rows visually stable during a mode change. The action's
+                // changingMode guard serializes requests without dimming them.
+                item.isEnabled = !configuringHelper && !helperNeedsRepair && currentState.isPresent && powerHelper.status == .enabled
                     && (mode != .high || PowerModeController.usesUnifiedMode || preferences.profiles[profile]?["highpowermode"] != nil)
+                (item.view as? EnergyModeRow)?.refresh()
             }
         } catch {
             modeHeading?.toolTip = error.localizedDescription
             for (mode, item) in modeItems { item.isEnabled = false; item.state = .off; item.image = BatteryMenu.modeImage(mode, selected: false, appearance: statusItem.button?.effectiveAppearance); item.setAccessibilityValue("Unavailable") }
+            for item in modeItems.values { (item.view as? EnergyModeRow)?.refresh() }
         }
     }
 
@@ -253,52 +286,66 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         monitor?.refresh()
         let profile: PowerProfile = currentState.isExternalPowerConnected ? .adapter : .battery
         changingMode = true
-        Task {
-            do {
-                try await Task.detached { try PowerModeController.set(mode, profile: profile) }.value
-                modeProfile = nil
-                monitor?.refresh()
-            } catch {
-                if case PowerModeController.PowerError.helperUnavailable = error {
-                    helperNeedsRepair = true
-                    helperItem?.title = "Repair Quick Power Switching…"
-                    helperItem?.isHidden = false
+        refreshPowerModeSection()
+        DispatchQueue.global(qos: .userInitiated).async {
+            let result = Result { try PowerModeController.set(mode, profile: profile) }
+            // Deliver completion during AppKit menu tracking, not only once
+            // the user closes the menu and the default run loop resumes.
+            RunLoop.main.perform(inModes: [.default, .eventTracking]) { [weak self] in
+                MainActor.assumeIsolated {
+                    guard let self else { return }
+                    self.changingMode = false
+                    switch result {
+                    case .success:
+                        self.modeProfile = nil
+                        self.monitor?.refresh()
+                    case .failure(let error):
+                        if case PowerModeController.PowerError.helperUnavailable = error {
+                            self.helperNeedsRepair = true
+                        }
+                        self.statusItem.menu?.cancelTracking()
+                        let alert = NSAlert(error: error)
+                        alert.messageText = "Could not change power mode"
+                        alert.runModal()
+                    }
+                    self.refreshPowerModeSection()
                 }
-                let alert = NSAlert(error: error)
-                alert.messageText = "Could not change power mode"
-                alert.runModal()
             }
-            changingMode = false
         }
     }
 
     @objc private func configurePowerHelper() {
+        guard !configuringHelper else { return }
         guard powerHelper.status != .enabled || helperNeedsRepair else { return }
-        do {
-            if helperNeedsRepair && powerHelper.status == .enabled {
-                // Replace the service registration so its signed client/helper
-                // requirements refer to this build, never relax authentication.
-                try powerHelper.unregister()
-            }
-            if powerHelper.status != .requiresApproval {
-                let alert = NSAlert()
-                alert.messageText = "Enable quick power switching?"
-                alert.informativeText = "macOS needs administrator approval once for a small helper that changes only power modes. Use Touch ID if macOS offers it, or your administrator password. The app cannot choose macOS's authentication method and saves no password. Keep this app in Applications. Approve Inside Battery in Login Items & Extensions."
-                alert.addButton(withTitle: "Enable")
-                alert.addButton(withTitle: "Cancel")
-                guard alert.runModal() == .alertFirstButtonReturn else { return }
-                try powerHelper.register()
-            }
-            helperNeedsRepair = false
-            if powerHelper.status == .requiresApproval { SMAppService.openSystemSettingsLoginItems() }
-        } catch {
-            // Registration may leave an approval pending even if macOS returns
-            // launchDeniedByUser. Show that actual state instead of retrying.
-            if powerHelper.status == .requiresApproval {
-                SMAppService.openSystemSettingsLoginItems()
-            } else {
+        if powerHelper.status == .requiresApproval && !helperNeedsRepair {
+            SMAppService.openSystemSettingsLoginItems()
+            return
+        }
+        let alert = NSAlert()
+        alert.messageText = helperNeedsRepair ? "Repair quick power switching?" : "Enable quick power switching?"
+        alert.informativeText = "Register the helper from this copy of Inside Battery. macOS may ask for approval in Login Items & Extensions. No password is saved."
+        alert.addButton(withTitle: helperNeedsRepair ? "Repair" : "Enable")
+        alert.addButton(withTitle: "Cancel")
+        guard alert.runModal() == .alertFirstButtonReturn else { return }
+        configuringHelper = true
+        Task {
+            defer { configuringHelper = false }
+            do {
+                let status = try await PowerHelperRegistration.replace()
+                if status == .requiresApproval {
+                    helperNeedsRepair = false
+                    SMAppService.openSystemSettingsLoginItems()
+                    return
+                }
+                guard status == .enabled else {
+                    throw PowerModeController.PowerError.helperUnavailable("Helper registration ended in state: \(PowerHelperRegistration.statusDescription(status)).")
+                }
+                try await Task.detached { try PowerModeController.checkHelperConnection() }.value
+                helperNeedsRepair = false
+            } catch {
+                helperNeedsRepair = true
                 let alert = NSAlert(error: error)
-                alert.messageText = "Could not enable quick switching"
+                alert.messageText = "Quick switching setup did not complete"
                 alert.runModal()
             }
         }

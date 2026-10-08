@@ -13,6 +13,32 @@ enum SelfTest {
             (chargingLabel == "Battery 73 percent, charging", "describes charging state (got: \(chargingLabel))"),
             (BatteryState.unavailable.accessibilityLabel == "Battery unavailable", "describes an unavailable battery")
         ]
+        for (minutes, expected) in [
+            (1, "1 minute until fully charged"),
+            (45, "45 minutes until fully charged"),
+            (60, "1 hour until fully charged"),
+            (61, "1 hour and 1 minute until fully charged"),
+            (125, "2 hours and 5 minutes until fully charged"),
+            (0, "Less than a minute until fully charged"),
+            (-1, "Calculating time until fully charged…"),
+            (-2, "Charging estimate unavailable")
+        ] {
+            let state = BatteryState(percentage: 73, isCharging: true, minutesUntilFull: minutes)
+            checks.append((state.timeUntilFullLabel == expected, "formats charging estimate: \(minutes)"))
+        }
+        let timedCharge = BatteryMonitor.state(from: [
+            kIOPSCurrentCapacityKey: 73, kIOPSMaxCapacityKey: 100,
+            kIOPSIsChargingKey: true, kIOPSTimeToFullChargeKey: 80
+        ])
+        checks += [
+            (timedCharge.minutesUntilFull == 80, "reads native charging estimate in minutes"),
+            (timedCharge.withHighPowerMode(true).minutesUntilFull == 80, "mode update preserves charging estimate"),
+            (BatteryState(percentage: 73, isCharging: true).timeUntilFullLabel == "Charging estimate unavailable", "missing estimate is not reported as zero"),
+            (BatteryState(percentage: 73, isCharging: false, isExternalPowerConnected: true, minutesUntilFull: 80).timeUntilFullLabel == nil, "paused charging hides stale estimate"),
+            (BatteryState(percentage: 73, isCharging: false, minutesUntilFull: 80).minutesUntilFull == nil, "unplugging clears estimate"),
+            (BatteryState(percentage: 100, isCharging: true, minutesUntilFull: 80).timeUntilFullLabel == nil, "full battery hides estimate"),
+            (BatteryState(percentage: 73, isCharging: true, isPresent: false, minutesUntilFull: 80).minutesUntilFull == nil, "absent battery clears estimate")
+        ]
         // Sample the composited pixels, not just the symbol source: the previous
         // source-atop tint painted a solid square across the circle underneath.
         for mode in PowerMode.allCases {
@@ -62,6 +88,18 @@ enum SelfTest {
             kIOPSIsChargingKey: false,
             kIOPSPowerSourceStateKey: kIOPSACPowerValue
         ])
+        let adapterReading = BatteryMonitor.state(from: [
+            kIOPSCurrentCapacityKey: 73, kIOPSMaxCapacityKey: 100,
+            kIOPSIsChargingKey: false, kIOPSPowerSourceStateKey: kIOPSACPowerValue
+        ], adapterDetails: [kIOPSPowerAdapterWattsKey: 96])
+        checks += [
+            (adapterReading.chargerCapacityWatts == 96, "reads reported adapter capability in watts"),
+            (adapterReading.withHighPowerMode(true).chargerCapacityWatts == 96, "power-mode refresh preserves charger capability"),
+            (BatteryState(percentage: 73, isCharging: false, chargerCapacityWatts: 96).chargerCapacityWatts == nil,
+             "unplugged state discards stale charger capacity"),
+            (BatteryState(percentage: 73, isCharging: false, isExternalPowerConnected: true, chargerCapacityWatts: 0).chargerCapacityWatts == nil,
+             "zero adapter rating remains unavailable instead of reporting 0 W")
+        ]
         let unplugged = BatteryMonitor.state(from: [
             kIOPSCurrentCapacityKey: 73,
             kIOPSMaxCapacityKey: 100,

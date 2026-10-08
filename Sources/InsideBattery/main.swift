@@ -1,4 +1,45 @@
 import AppKit
+import ServiceManagement
+
+if CommandLine.arguments.contains("--print-helper-status") {
+    let service = SMAppService.daemon(plistName: PowerHelperIdentity.plist)
+    print(PowerHelperRegistration.statusDescription(service.status))
+    exit(0)
+}
+
+if CommandLine.arguments.contains("--check-power-helper") {
+    do {
+        try PowerModeController.checkHelperConnection()
+        print("PASS: authenticated power helper answered without changing power settings")
+        exit(0)
+    } catch {
+        FileHandle.standardError.write(Data((error.localizedDescription + "\n").utf8))
+        exit(1)
+    }
+}
+
+if CommandLine.arguments.contains("--repair-power-helper") {
+    Task {
+        do {
+            let status = try await PowerHelperRegistration.replace()
+            print("Helper registration: \(PowerHelperRegistration.statusDescription(status))")
+            if status == .requiresApproval {
+                print("Approve Inside Battery in System Settings → General → Login Items & Extensions, then run --check-power-helper.")
+                exit(2)
+            }
+            guard status == .enabled else {
+                throw PowerModeController.PowerError.helperUnavailable("Helper registration did not enable the service.")
+            }
+            try await Task.detached { try PowerModeController.checkHelperConnection() }.value
+            print("PASS: authenticated power helper answered without changing power settings")
+            exit(0)
+        } catch {
+            FileHandle.standardError.write(Data((error.localizedDescription + "\n").utf8))
+            exit(1)
+        }
+    }
+    RunLoop.main.run()
+}
 
 if CommandLine.arguments.contains("--print-energy-apps") {
     do {
@@ -19,6 +60,8 @@ if CommandLine.arguments.contains("--self-test") {
 if CommandLine.arguments.contains("--print-battery") {
     let state = BatteryMonitor.readState()
     print("percentage=\(state.percentage) charging=\(state.isCharging) externalPower=\(state.isExternalPowerConnected) lowPowerMode=\(state.isLowPowerMode) present=\(state.isPresent)")
+    print("chargerCapacityWatts=\(state.chargerCapacityWatts.map(String.init) ?? "unavailable")")
+    print("timeUntilFull=\(state.timeUntilFullLabel ?? "not charging")")
     exit(state.isPresent ? 0 : 1)
 }
 

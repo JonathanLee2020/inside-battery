@@ -1,25 +1,27 @@
 import AppKit
 
 enum BatteryIcon {
-    static let size = NSSize(width: 36, height: 18)
+    static let size = NSSize(width: 35, height: 18)
 
     // Black numerals stay readable over both the grey remainder and the charge fill.
     static func colors(for state: BatteryState, appearance: NSAppearance?) -> (surface: NSColor, number: NSColor, progress: NSColor) {
         let surface = state.isHighPowerMode && state.isPresent
-            ? NSColor(srgbRed: 0.74, green: 0.46, blue: 0.91, alpha: 1)
+            ? NSColor(srgbRed: 0.78, green: 0.53, blue: 0.94, alpha: 1)
             : NSColor(srgbRed: 0.72, green: 0.72, blue: 0.72, alpha: 1)
         // Use the native system yellow, matching macOS's semantic Low Power color.
         let progress = state.isLowPowerMode && state.isPresent ? NSColor.systemYellow
             : state.isExternalPowerConnected && state.isPresent
             ? NSColor(srgbRed: 0.35, green: 0.95, blue: 0.5, alpha: 1)
             : state.isHighPowerMode && state.isPresent
-            ? NSColor(srgbRed: 0.78, green: 0.49, blue: 0.96, alpha: 1)
+            ? NSColor(srgbRed: 0.79, green: 0.55, blue: 0.96, alpha: 1)
             : NSColor(srgbRed: 0.9, green: 0.9, blue: 0.9, alpha: 1)
         return (surface, .black, progress)
     }
 
     static func image(for state: BatteryState, appearance: NSAppearance?) -> NSImage {
-        let image = NSImage(size: size, flipped: false) { bounds in
+        let imageSize = NSSize(width: state.isExternalPowerConnected && state.isPresent ? size.width : 30,
+                               height: size.height)
+        let image = NSImage(size: imageSize, flipped: false) { bounds in
             draw(state: state, in: bounds, appearance: appearance)
             return true
         }
@@ -30,8 +32,8 @@ enum BatteryIcon {
 
     private static func draw(state: BatteryState, in bounds: NSRect, appearance: NSAppearance?) {
         let palette = colors(for: state, appearance: appearance)
-        let body = NSRect(x: 1, y: 1, width: 25, height: 16)
-        let bodyPath = NSBezierPath(roundedRect: body, xRadius: 4, yRadius: 4)
+        let body = NSRect(x: 1, y: 2, width: 25, height: 14)
+        let bodyPath = NSBezierPath(roundedRect: body, xRadius: 3.5, yRadius: 3.5)
         palette.surface.setFill()
         bodyPath.fill()
 
@@ -45,21 +47,21 @@ enum BatteryIcon {
 
         // Keep the silhouette visible against a light menu bar, including at 100%.
         (state.isHighPowerMode && state.isPresent
-            ? NSColor(srgbRed: 0.65, green: 0.32, blue: 0.84, alpha: 1)
+            ? NSColor(srgbRed: 0.72, green: 0.43, blue: 0.89, alpha: 1)
             : NSColor.black.withAlphaComponent(0.35)).setStroke()
         bodyPath.lineWidth = state.isHighPowerMode && state.isPresent ? 1.5 : 0.75
         bodyPath.stroke()
 
         palette.surface.setFill()
-        NSBezierPath(roundedRect: NSRect(x: 27, y: 6, width: 2, height: 6), xRadius: 1, yRadius: 1).fill()
+        NSBezierPath(roundedRect: NSRect(x: 27, y: 6.5, width: 1.5, height: 5), xRadius: 0.75, yRadius: 0.75).fill()
         if state.isHighPowerMode && state.isPresent {
             // A tiny fast-forward mark replaces the terminal, leaving the plug/
-            // bolt slot free and keeping the original 36-point status-item width.
+            // bolt slot free within the compact status-item width.
             palette.number.setStroke()
             let chevrons = NSBezierPath()
-            for x: CGFloat in [25.5, 27.5] {
+            for x: CGFloat in [25.5, 27] {
                 chevrons.move(to: NSPoint(x: x, y: 7))
-                chevrons.line(to: NSPoint(x: x + 1.5, y: 9))
+                chevrons.line(to: NSPoint(x: x + 1.25, y: 9))
                 chevrons.line(to: NSPoint(x: x, y: 11))
             }
             chevrons.lineWidth = 1
@@ -71,21 +73,21 @@ enum BatteryIcon {
             (dark ? palette.progress : palette.number).setFill()
             if state.isCharging {
                 let bolt = NSBezierPath()
-                bolt.move(to: NSPoint(x: 34.5, y: 14))
-                bolt.line(to: NSPoint(x: 30, y: 8))
-                bolt.line(to: NSPoint(x: 32.5, y: 8))
-                bolt.line(to: NSPoint(x: 31, y: 4))
-                bolt.line(to: NSPoint(x: 35.5, y: 10))
-                bolt.line(to: NSPoint(x: 33, y: 10))
+                bolt.move(to: NSPoint(x: 33.5, y: 14))
+                bolt.line(to: NSPoint(x: 29, y: 8))
+                bolt.line(to: NSPoint(x: 31.5, y: 8))
+                bolt.line(to: NSPoint(x: 30, y: 4))
+                bolt.line(to: NSPoint(x: 34.5, y: 10))
+                bolt.line(to: NSPoint(x: 32, y: 10))
                 bolt.close()
                 bolt.fill()
             } else {
                 // Two prongs, a rounded plug body, and a short cable remain recognizable
                 // at menu-bar size without enlarging the status item.
-                NSRect(x: 31, y: 11, width: 1.25, height: 3).fill()
-                NSRect(x: 33.5, y: 11, width: 1.25, height: 3).fill()
-                NSBezierPath(roundedRect: NSRect(x: 30, y: 6, width: 5.5, height: 5.5), xRadius: 1.5, yRadius: 1.5).fill()
-                NSBezierPath(roundedRect: NSRect(x: 32.125, y: 3.5, width: 1.25, height: 3.5), xRadius: 0.5, yRadius: 0.5).fill()
+                NSRect(x: 30, y: 11, width: 1.25, height: 3).fill()
+                NSRect(x: 32.5, y: 11, width: 1.25, height: 3).fill()
+                NSBezierPath(roundedRect: NSRect(x: 29, y: 6, width: 5.5, height: 5.5), xRadius: 1.5, yRadius: 1.5).fill()
+                NSBezierPath(roundedRect: NSRect(x: 31.125, y: 3.5, width: 1.25, height: 3.5), xRadius: 0.5, yRadius: 0.5).fill()
             }
         }
 

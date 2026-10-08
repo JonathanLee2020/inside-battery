@@ -25,9 +25,11 @@ final class Reply: @unchecked Sendable {
 enum PowerClient {
 nonisolated static func run() throws {
     let args = CommandLine.arguments
-    guard args.count == 3, let value = Int(args[1]), let mode = PowerMode(rawValue: value),
-          let profile = PowerProfile(rawValue: args[2]) else {
-        throw PowerModeController.PowerError.message("Usage: InsideBatteryPowerClient 0|1|2 'Battery Power'|'AC Power'")
+    let checkOnly = args.count == 2 && args[1] == "--check"
+    let mode = args.count == 3 ? Int(args[1]).flatMap(PowerMode.init(rawValue:)) : nil
+    let profile = args.count == 3 ? PowerProfile(rawValue: args[2]) : nil
+    guard checkOnly || (mode != nil && profile != nil) else {
+        throw PowerModeController.PowerError.message("Usage: InsideBatteryPowerClient --check | 0|1|2 'Battery Power'|'AC Power'")
     }
     let path = URL(fileURLWithPath: args[0]).deletingLastPathComponent().deletingLastPathComponent()
         .appendingPathComponent("Resources/PowerHelperHash.txt")
@@ -43,7 +45,11 @@ nonisolated static func run() throws {
     guard let proxy = connection.remoteObjectProxyWithErrorHandler({ result.finish("\($0.localizedDescription) Choose Repair Quick Power Switching to register this build's helper.", connectionFailure: true) }) as? PowerHelperProtocol else {
         throw PowerModeController.PowerError.helperUnavailable("Could not connect to the power helper. Choose Repair Quick Power Switching.")
     }
-    proxy.setPowerMode(mode.rawValue, profile: profile.rawValue) { result.finish($0) }
+    if checkOnly {
+        proxy.checkConnection { result.finish(nil) }
+    } else if let mode, let profile {
+        proxy.setPowerMode(mode.rawValue, profile: profile.rawValue) { result.finish($0) }
+    }
     guard result.semaphore.wait(timeout: .now() + 15) == .success else {
         throw PowerModeController.PowerError.helperUnavailable("Power helper did not respond within 15 seconds. Choose Repair Quick Power Switching and check its approval in Login Items.")
     }
