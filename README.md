@@ -4,10 +4,10 @@ A tiny, native macOS menu-bar app that puts the percentage **inside** its batter
 
 ## Downloads and package managers
 
-Version **0.2.0** is prepared as an **Apple Silicon development preview**, with
-a ZIP archive, SHA-256 manifest, and publication script. Downloads live under
-[GitHub Releases](https://github.com/JonathanLee2020/inside-battery/releases)
-once published. macOS 13 or newer is required; Intel builds are not included.
+Version **0.2.0** is available as an **Apple Silicon development preview**, with
+a ZIP archive and SHA-256 manifest on
+[GitHub Releases](https://github.com/JonathanLee2020/inside-battery/releases/tag/v0.2.0).
+macOS 13 or newer is required; Intel builds are not included.
 
 The preview is ad-hoc signed, not Developer ID signed or notarized. Gatekeeper
 may block downloaded copies. Fresh-install helper approval, power switching,
@@ -15,7 +15,7 @@ and persistence after restarting are unverified for the release build. The
 development Mac uses a temporary helper recovery, not a public installer.
 Read [the release notes](packaging/releases/v0.2.0.md) before installing.
 
-After release/tap publication, the Homebrew preview command is:
+The Homebrew preview command is:
 
 ```sh
 brew install --cask JonathanLee2020/inside-battery/inside-battery
@@ -190,9 +190,9 @@ Generated apps, Swift build artifacts, and local environment files
 are excluded from Git. See [CHANGELOG.md](CHANGELOG.md) for each version's changes
 and verification limits.
 
-The initial snapshot is tagged `v0.1.0`. Version 0.2.0 is prepared on
-`release/v0.2.0`; publication pushes that branch and creates a prerelease with
-download assets, never pushing directly to `main`. No source license has been
+The initial snapshot is tagged `v0.1.0`. Version `v0.2.0` is published from
+`release/v0.2.0` as a prerelease with download assets. Publication never pushes
+directly to `main`. No source license has been
 selected; publishing source does not itself grant a reuse license.
 
 To inspect an older tagged version without changing the current checkout:

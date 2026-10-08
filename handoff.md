@@ -2,7 +2,7 @@
 
 Updated: 8 October 2026. There is one app build: `dist/Inside Battery.app`.
 
-## Release preparation — 0.2.0
+## Published release — 0.2.0
 
 User requested downloadable versions and Homebrew/MacPorts distribution.
 Prepared an Apple Silicon development-preview ZIP at
@@ -32,11 +32,16 @@ the archive hash, stages an explicit source allowlist and commits the release
 using GitHub noreply metadata, pushes only that branch, publishes GitHub v0.2.0 as a
 prerelease, and creates a separate public `homebrew-inside-battery` tap with
 the release branch as its default. No push to main, official registry submission,
-Gatekeeper bypass, or silent administrator approval occurs. GitHub network/auth
-access fails inside Codex; outside-Terminal publication remains necessary.
-Creating the release branch succeeded, but git add/commit failed with
-`.git/index.lock: Operation not permitted`. No release commit or upload is
-claimed. MacPorts lint now reports 0 errors/0 warnings; Homebrew content-loader
+Gatekeeper bypass, or silent administrator approval occurs. Initial restricted
+Codex execution blocked `.git/index.lock` writes and GitHub networking. User
+changed to Full access; authentication and publication then succeeded.
+Release source commit: `b0dffee`, pushed on `release/v0.2.0` only.
+Public prerelease: https://github.com/JonathanLee2020/inside-battery/releases/tag/v0.2.0
+Public tap: https://github.com/JonathanLee2020/homebrew-inside-battery
+Tap commit: `79d8ce8`; default branch `release/v0.2.0`.
+Public ZIP downloaded without authentication: 204162 bytes, SHA-256 matches above.
+Install command: `brew install --cask JonathanLee2020/inside-battery/inside-battery`.
+MacPorts lint reports 0 errors/0 warnings; Homebrew content-loader
 parsing passes without a recipe deprecation warning. No package installation
 test has run. Original app still uses the working temporary helper.
 
