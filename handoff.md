@@ -2,11 +2,15 @@
 
 Updated: 8 October 2026. There is one app build: `dist/Inside Battery.app`.
 
-## Sparkle implementation — unpublished 0.2.2
+## Published Sparkle release — 0.2.2
 
-User requested Sparkle implementation, not publication of a new version.
-No new commit/push or public release was made. Existing dist app and working
-helper were not replaced; no review variant was launched.
+User explicitly requested publication after implementation and testing.
+Published source commit `dd44438` on `release/v0.2.2` (no main push).
+Release: https://github.com/JonathanLee2020/inside-battery/releases/tag/v0.2.2
+Live feed: https://github.com/JonathanLee2020/inside-battery/releases/download/update-feed/appcast.xml
+Homebrew tap commit `fad22cb`; release/v0.2.2 also fast-forwarded the existing
+non-main default branch release/v0.2.0. Existing dist app and working helper
+were not replaced; no review variant was launched.
 
 Pinned Sparkle 2.10.0 using SwiftPM and Package.resolved. AppUpdater owns the
 standard controller, starts scheduled checks and connects Check for Updates in
@@ -31,7 +35,7 @@ the verified Sparkle framework and plist while retaining the original helper pai
 Release preparation generates signed appcast and license asset. Publisher would
 publish versioned feed/license assets and update/create dedicated update-feed
 release only when explicitly invoked for a release branch. Package.resolved is
-included in the publication allowlist. No public feed exists yet.
+included in the publication allowlist. Public feed is now live.
 
 Verification: 177 checks, complete framework/app/helper signature verification,
 updater startup in a separate bundle, signed archive/feed generation and ZIP
@@ -49,8 +53,15 @@ used SPUUpdater's checkForUpdateInformation diagnostics instead.
 Prepared archive: dist/releases/v0.2.2/InsideBattery-0.2.2-arm64.zip.
 SHA256: c40ea1c8905973172a5c51ab7f58c26861ab491c19b703419f79af567750dcad.
 Signed feed: dist/releases/v0.2.2/appcast.xml; license: Sparkle-LICENSE.txt.
-Documentation: packaging/sparkle/README.md. App remains unnotarized; public
-activation and the real app's privileged-helper upgrades remain outstanding.
+Documentation: packaging/sparkle/README.md. App remains unnotarized; the real
+app's privileged-helper upgrades remain outstanding.
+Public ZIP: 1286212 bytes, checksum and Ed25519 signature verified against the
+public signed feed. Real Sparkle downloaded and parsed the public HTTPS feed.
+Homebrew fetch of 0.2.2 passed after a fast-forward of the clean local tap.
+MacPorts recipe lint: 0 errors/0 warnings; installed definitions are old.
+Publication initially failed on copied license trailing whitespace; attempted
+edit failed because the copied license was read-only. Made only the copied
+license writable, removed whitespace without wording changes, checks passed.
 Local interface stage preserves the original helper pair byte-for-byte:
 `.build/interface-updates/sparkle-bootstrap.fa0s8g3g/Inside Battery.app`.
 177 checks, updater startup and stage signature pass. It is NOT installed.
