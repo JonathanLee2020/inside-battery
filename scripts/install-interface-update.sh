@@ -22,6 +22,10 @@ BACKUP=$(/usr/bin/mktemp -d "$PROJECT/.build/rollback-backups/interface-install.
 /usr/bin/ditto "$APP" "$BACKUP/Inside Battery.app"
 echo "Previous app backed up at: $BACKUP/Inside Battery.app"
 /bin/cp "$STAGED/Contents/MacOS/InsideBattery" "$APP/Contents/MacOS/InsideBattery"
+if [ -d "$STAGED/Contents/Frameworks/Sparkle.framework" ]; then
+    /usr/bin/ditto "$STAGED/Contents/Frameworks/Sparkle.framework" "$APP/Contents/Frameworks/Sparkle.framework"
+    /bin/cp "$STAGED/Contents/Info.plist" "$APP/Contents/Info.plist"
+fi
 /usr/bin/codesign --force --sign - "$APP"
 /usr/bin/codesign --verify --deep --strict "$APP"
 /usr/bin/cmp "$APP/Contents/Helpers/InsideBatteryPowerClient" "$BACKUP/Inside Battery.app/Contents/Helpers/InsideBatteryPowerClient"

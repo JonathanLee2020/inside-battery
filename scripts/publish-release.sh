@@ -21,7 +21,7 @@ print("PASS: prepared release archive matches its manifest")
 PY
 gh auth status --hostname github.com
 # Explicit source allowlist: archives, caches, and environment files stay out.
-git add .gitignore CHANGELOG.md Makefile Package.swift README.md Resources Sources \
+git add .gitignore CHANGELOG.md Makefile Package.swift Package.resolved README.md Resources Sources \
     Tests handoff.md packaging scripts Casks
 git diff --cached --check
 if [ -n "$(git ls-files --others --exclude-standard)" ]; then
@@ -45,6 +45,22 @@ gh release create "v$VERSION" "$ARCHIVE" "$OUT/SHA256SUMS.txt" \
     --title "Inside Battery $VERSION — development preview" \
     --notes-file "$OUT/RELEASE-NOTES.md"
 gh release view "v$VERSION" --repo "$REPO" --json url,assets --jq '{url, assets: [.assets[].name]}'
+
+if [ -f "$OUT/appcast.xml" ]; then
+    .build/sparkle-tools/bin/sign_update --account inside-battery --verify "$OUT/appcast.xml"
+    # Preserve each signed feed snapshot with its immutable versioned release.
+    gh release upload "v$VERSION" "$OUT/appcast.xml" --repo "$REPO"
+    gh release upload "v$VERSION" "$OUT/Sparkle-LICENSE.txt" --repo "$REPO"
+    if gh release view update-feed --repo "$REPO" >/dev/null 2>&1; then
+        # The dedicated feed is intentionally mutable; versioned snapshots remain.
+        gh release upload update-feed "$OUT/appcast.xml" --repo "$REPO" --clobber
+    else
+        gh release create update-feed "$OUT/appcast.xml" --repo "$REPO" \
+            --target "$COMMIT" --prerelease \
+            --title 'Automatic update feed — not an app download' \
+            --notes 'Signed Sparkle feed. Download the app from a versioned release instead.'
+    fi
+fi
 
 # A separate tap lets Homebrew see Casks on its default branch without changing
 # the app repository's default branch or pushing either repository's main.

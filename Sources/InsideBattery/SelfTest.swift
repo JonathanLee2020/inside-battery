@@ -13,6 +13,21 @@ enum SelfTest {
             (chargingLabel == "Battery 73 percent, charging", "describes charging state (got: \(chargingLabel))"),
             (BatteryState.unavailable.accessibilityLabel == "Battery unavailable", "describes an unavailable battery")
         ]
+        func allowsHelperUpdate(_ installed: String, _ published: String?, active: Bool = true) -> Bool {
+            do {
+                try AppUpdater.validateHelperUpdate(installedHash: installed, publishedHash: published, helperActive: active)
+                return true
+            } catch { return false }
+        }
+        let updateHash = String(repeating: "a", count: 40)
+        checks += [
+            (allowsHelperUpdate(updateHash + "\n", updateHash), "UI-only updates preserve the registered helper pair"),
+            (!allowsHelperUpdate(updateHash, String(repeating: "b", count: 40)), "updates cannot silently replace a different registered helper"),
+            (!allowsHelperUpdate(updateHash, nil), "updates require helper compatibility metadata when a helper is registered"),
+            (!allowsHelperUpdate("", ""), "empty matching hashes cannot bypass helper compatibility checks"),
+            (!allowsHelperUpdate("invalid", "invalid"), "malformed matching hashes cannot bypass helper compatibility checks"),
+            (allowsHelperUpdate(updateHash, nil, active: false), "apps without a registered helper can install an update")
+        ]
         for (minutes, expected) in [
             (1, "1 minute until fully charged"),
             (45, "45 minutes until fully charged"),

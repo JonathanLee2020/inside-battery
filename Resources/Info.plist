@@ -15,13 +15,27 @@
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleShortVersionString</key>
-    <string>0.2.1</string>
+    <string>0.2.2</string>
     <key>CFBundleVersion</key>
-    <string>3</string>
+    <string>4</string>
     <key>LSMinimumSystemVersion</key>
     <string>13.0</string>
     <key>LSUIElement</key>
     <true/>
+    <key>SUFeedURL</key>
+    <string>https://github.com/JonathanLee2020/inside-battery/releases/download/update-feed/appcast.xml</string>
+    <key>SUPublicEDKey</key>
+    <string>8D0PrIKxt83mi2rlg5zw23qj0EAN/z4Nj+/98qvAMLU=</string>
+    <key>SURequireSignedFeed</key>
+    <true/>
+    <key>SUVerifyUpdateBeforeExtraction</key>
+    <true/>
+    <key>SUAllowsAutomaticUpdates</key>
+    <false/>
+    <key>SUEnableAutomaticChecks</key>
+    <true/>
+    <key>SUSendProfileInfo</key>
+    <false/>
     <key>NSHumanReadableCopyright</key>
     <string>Copyright © 2026 Inside Battery contributors</string>
 </dict>

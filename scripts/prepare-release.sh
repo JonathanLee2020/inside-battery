@@ -48,5 +48,9 @@ codesign --verify --deep --strict "$STAGING/unpacked/Inside Battery.app"
 "$STAGING/unpacked/Inside Battery.app/Contents/MacOS/InsideBattery" --self-test
 cp "$NOTES" "$OUT/RELEASE-NOTES.md"
 python3 scripts/write-release-recipes.py "$OUT/$ARCHIVE" "$VERSION" "$RELEASE_KIND"
+if /usr/libexec/PlistBuddy -c 'Print :SUPublicEDKey' Resources/Info.plist >/dev/null 2>&1; then
+    cp packaging/sparkle/LICENSE "$OUT/Sparkle-LICENSE.txt"
+    python3 scripts/prepare-update-feed.py "$OUT/$ARCHIVE" --notes "$NOTES" --output "$OUT/appcast.xml"
+fi
 echo "PASS: release archive round-trip verifies: $OUT/$ARCHIVE"
 echo 'Fresh-install helper approval and power switching are NOT verified by packaging.'

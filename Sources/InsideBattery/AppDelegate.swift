@@ -12,6 +12,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private var helperNeedsRepair = false
     private var configuringHelper = false
     private let powerHelper = SMAppService.daemon(plistName: PowerHelperIdentity.plist)
+    private let appUpdater = AppUpdater()
+    private var checkUpdatesItem: NSMenuItem?
     private var helperItem: NSMenuItem?
     private var activeMode: PowerMode?
     private var modeProfile: PowerProfile?
@@ -29,6 +31,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         configureMenu()
+        if let checkUpdatesItem { appUpdater.start(menuItem: checkUpdatesItem) }
         monitor = BatteryMonitor { [weak self] state in
             self?.update(state)
         }
@@ -106,6 +109,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         estimateItem.target = self
         estimateItem.state = showTimeUntilFull ? .on : .off
         appMenu.addItem(estimateItem)
+
+        let updatesItem = NSMenuItem(title: "Check for Updates…", action: nil, keyEquivalent: "")
+        updatesItem.isEnabled = false
+        checkUpdatesItem = updatesItem
+        appMenu.addItem(.separator())
+        appMenu.addItem(updatesItem)
 
         let quitItem = NSMenuItem(title: "Quit Inside Battery", action: #selector(quit), keyEquivalent: "q")
         quitItem.target = self

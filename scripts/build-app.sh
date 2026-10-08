@@ -7,7 +7,8 @@ SIGNING_IDENTITY="${SIGNING_IDENTITY:--}"
 
 sign_binary() {
     if [ "$SIGNING_IDENTITY" = '-' ]; then
-        codesign --force --sign - --options runtime --identifier "$2" "$1"
+        # Ad-hoc development builds cannot satisfy hardened library validation.
+        codesign --force --sign - --identifier "$2" "$1"
     else
         codesign --force --sign "$SIGNING_IDENTITY" --timestamp --options runtime --identifier "$2" "$1"
     fi
@@ -31,6 +32,15 @@ BIN_DIR="$(swift_build --show-bin-path)"
 mkdir -p "$APP_DIR/Contents/MacOS" "$APP_DIR/Contents/Resources" "$APP_DIR/Contents/Helpers" "$APP_DIR/Contents/Library/LaunchDaemons"
 cp "$BIN_DIR/InsideBattery" "$APP_DIR/Contents/MacOS/InsideBattery"
 cp Resources/Info.plist "$APP_DIR/Contents/Info.plist"
+FRAMEWORK='.build/artifacts/sparkle/Sparkle/Sparkle.xcframework/macos-arm64_x86_64/Sparkle.framework'
+mkdir -p "$APP_DIR/Contents/Frameworks"
+ditto "$FRAMEWORK" "$APP_DIR/Contents/Frameworks/Sparkle.framework"
+SPARKLE="$APP_DIR/Contents/Frameworks/Sparkle.framework/Versions/B"
+sign_binary "$SPARKLE/Autoupdate" org.sparkle-project.Autoupdate
+sign_binary "$SPARKLE/Updater.app" org.sparkle-project.Sparkle.Updater
+sign_binary "$SPARKLE/XPCServices/Downloader.xpc" org.sparkle-project.Downloader
+sign_binary "$SPARKLE/XPCServices/Installer.xpc" org.sparkle-project.Installer
+sign_binary "$APP_DIR/Contents/Frameworks/Sparkle.framework" org.sparkle-project.Sparkle
 # Sign leaf binaries first. The helper embeds the exact client hash; this avoids
 # a circular app/helper resource-seal dependency with local ad-hoc signatures.
 SUPPORT="Sources/InsideBattery/PowerMode.swift Sources/InsideBattery/PowerHelperProtocol.swift"

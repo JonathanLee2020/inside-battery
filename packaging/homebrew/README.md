@@ -1,6 +1,6 @@
 # Inside Battery Homebrew tap
 
-Install the latest development preview (0.2.1):
+Install the latest development preview (0.2.2):
 
 ```sh
 brew tap JonathanLee2020/inside-battery
@@ -15,7 +15,7 @@ brew upgrade --cask JonathanLee2020/inside-battery/inside-battery
 ```
 
 Alternatively, download the ZIP from
-[GitHub Releases](https://github.com/JonathanLee2020/inside-battery/releases/tag/v0.2.1),
+[GitHub Releases](https://github.com/JonathanLee2020/inside-battery/releases/tag/v0.2.2),
 extract it, and move the complete app to Applications.
 
 This is an Apple Silicon development preview, not an official `homebrew/cask`
@@ -28,3 +28,7 @@ app into Applications before requesting helper approval; avoid multiple app copi
 
 No source license has been selected yet. The tap recipe does not grant a license
 to reuse the application's source code.
+
+Version 0.2.2 adds Check for Updates in the app menu. Older versions need one
+manual or Homebrew upgrade first. In-app updates that change a registered power
+helper require manual installation until helper upgrades are verified.

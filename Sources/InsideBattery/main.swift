@@ -1,5 +1,22 @@
 import AppKit
 import ServiceManagement
+import Sparkle
+
+if CommandLine.arguments.contains("--probe-update-feed") {
+    exit(UpdateFeedProbe().run())
+}
+
+if CommandLine.arguments.contains("--check-updater-configuration") {
+    let controller = SPUStandardUpdaterController(startingUpdater: false, updaterDelegate: nil, userDriverDelegate: nil)
+    do {
+        try controller.updater.start()
+        print("PASS: Sparkle updater started; feed=\(controller.updater.feedURL?.absoluteString ?? "missing")")
+        exit(0)
+    } catch {
+        FileHandle.standardError.write(Data((error.localizedDescription + "\n").utf8))
+        exit(1)
+    }
+}
 
 if CommandLine.arguments.contains("--print-helper-status") {
     let service = SMAppService.daemon(plistName: PowerHelperIdentity.plist)

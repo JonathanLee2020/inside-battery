@@ -4,6 +4,13 @@ Versions preserve source snapshots and, from 0.2.0, prepared downloadable previe
 
 ## Unreleased
 
+## 0.2.2 — 2026-10-08 (development preview)
+
+- Sparkle 2.10.0 integration with Check for Updates, standard update dialog and
+  scheduled checks; signed archives/feeds and helper compatibility validation.
+- Signed-feed checks and a disposable app's download/install/relaunch passed.
+  Privileged-helper upgrades remain unverified and require manual installation.
+
 ## 0.2.1 — 2026-10-08 (development preview)
 
 - High Power charge fill is lighter purple with a contrasting grey empty area;

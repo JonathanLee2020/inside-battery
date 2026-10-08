@@ -2,6 +2,59 @@
 
 Updated: 8 October 2026. There is one app build: `dist/Inside Battery.app`.
 
+## Sparkle implementation — unpublished 0.2.2
+
+User requested Sparkle implementation, not publication of a new version.
+No new commit/push or public release was made. Existing dist app and working
+helper were not replaced; no review variant was launched.
+
+Pinned Sparkle 2.10.0 using SwiftPM and Package.resolved. AppUpdater owns the
+standard controller, starts scheduled checks and connects Check for Updates in
+the app submenu, with main-actor KVO menu enablement. Initial build failed on a
+non-Sendable menu capture; storing the menu on the main-actor object fixed it.
+Resources/Info.plist is now 0.2.2/build 4, with HTTPS dedicated release-asset feed,
+public Ed25519 key, signed-feed requirement, verification before extraction,
+silent automatic installation disabled and profile reporting disabled.
+
+Private signing key generated in login Keychain under account inside-battery;
+never exported. Only public key is in source. Official Sparkle tools downloaded
+to .build/sparkle-tools. prepare-update-feed.py signs/verifies archive and feed,
+embeds release notes/version and registered-helper compatibility metadata.
+AppUpdater blocks missing/different/malformed helper hashes when registered,
+so in-app updates cannot silently invalidate the exact client/helper trust pair.
+Helper-changing updates require manual install, still unverified.
+
+Build script embeds and signs all nested Sparkle components; development ad-hoc
+builds omit hardened-runtime library validation that requires a signing team.
+Developer ID builds retain hardened runtime. Interface installer now also copies
+the verified Sparkle framework and plist while retaining the original helper pair.
+Release preparation generates signed appcast and license asset. Publisher would
+publish versioned feed/license assets and update/create dedicated update-feed
+release only when explicitly invoked for a release branch. Package.resolved is
+included in the publication allowlist. No public feed exists yet.
+
+Verification: 177 checks, complete framework/app/helper signature verification,
+updater startup in a separate bundle, signed archive/feed generation and ZIP
+round-trip. Information-only Sparkle diagnostic downloaded/parsed both empty
+and sample signed feeds on a local server, including helper metadata. A tampered
+feed correctly failed signature validation. A disposable app without any power
+helper then updated via the standard Sparkle window; user clicked Install and
+Relaunch. Verified installed bundle version 2, valid signature and launch marker
+written by version 2. Temporary test app terminated after writing its marker.
+Computer Use access to the disposable app was not approved, so user performed
+the clicks; no alternate UI tool bypass was attempted.
+Attempt to use a standalone Sparkle CLI failed (not shipped in downloaded tools);
+used SPUUpdater's checkForUpdateInformation diagnostics instead.
+
+Prepared archive: dist/releases/v0.2.2/InsideBattery-0.2.2-arm64.zip.
+SHA256: c40ea1c8905973172a5c51ab7f58c26861ab491c19b703419f79af567750dcad.
+Signed feed: dist/releases/v0.2.2/appcast.xml; license: Sparkle-LICENSE.txt.
+Documentation: packaging/sparkle/README.md. App remains unnotarized; public
+activation and the real app's privileged-helper upgrades remain outstanding.
+Local interface stage preserves the original helper pair byte-for-byte:
+`.build/interface-updates/sparkle-bootstrap.fa0s8g3g/Inside Battery.app`.
+177 checks, updater startup and stage signature pass. It is NOT installed.
+
 ## Published release — 0.2.1
 
 User authorized publishing current UI and energy-parser fixes as newest release.
