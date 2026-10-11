@@ -4,16 +4,16 @@ A tiny, native macOS menu-bar app that puts the percentage **inside** its batter
 
 ## Downloads and package managers
 
-Version **0.2.2** is available as an **Apple Silicon development preview**, with
+Version **0.2.3** is available as an **Apple Silicon development preview**, with
 a ZIP archive and SHA-256 manifest on
-[GitHub Releases](https://github.com/JonathanLee2020/inside-battery/releases/tag/v0.2.2).
+[GitHub Releases](https://github.com/JonathanLee2020/inside-battery/releases/tag/v0.2.3).
 macOS 13 or newer is required; Intel builds are not included.
 
 The preview is ad-hoc signed, not Developer ID signed or notarized. Gatekeeper
 may block downloaded copies. Fresh-install helper approval, power switching,
 and persistence after restarting are unverified for the release build. The
 development Mac uses a temporary helper recovery, not a public installer.
-Read [the release notes](packaging/releases/v0.2.2.md) before installing.
+Read [the release notes](packaging/releases/v0.2.3.md) before installing.
 
 Versions 0.2.1 and earlier require one manual or Homebrew upgrade to get the
 Sparkle updater. From 0.2.2, use **Inside Battery → Check for Updates…** for
@@ -60,11 +60,21 @@ the reviewed development preview. Existing release archives/tags are not overwri
 Requirements: macOS 13 or newer and the Swift toolchain included with Xcode Command Line Tools.
 
 ```sh
-make test
-make run
+make app
+"dist/Inside Battery.app/Contents/MacOS/InsideBattery" --self-test
+open "dist/Inside Battery.app"
 ```
 
-`make test` runs fast executable self-checks followed by the XCTest suite.
+The build bundles and signs Sparkle alongside the app and power helper. Run
+self-checks from the complete app bundle so the updater framework can load.
+`make run` builds and opens the app in one step. Full builds replace the local
+app and helper binaries; use a separate `APP_DIR` when preserving a working
+installation (see [handoff.md](handoff.md)).
+
+`swift test` runs the XCTest suite where the installed toolchain provides XCTest.
+It failed with `no such module 'XCTest'` in the current Command Line Tools
+installation; no XCTest pass is claimed. The 0.2.2 release passed 177 executable
+self-checks. SDK overrides for this development Mac are recorded in the handoff.
 
 To copy the app to `~/Applications` and open it:
 
@@ -116,8 +126,9 @@ with the same palette on light and dark menu bars. Automatic sizing avoids
 reserving an unused charging-symbol slot while unplugged.
 
 The menu distinguishes actively charging from plugged in but not charging (for
-example, when charging is paused). Both plugged-in states show green; actively
-charging shows a lightning bolt, while plugged in but not charging shows a plug.
+example, when charging is paused). In Automatic mode, both plugged-in states
+show green; actively charging shows a lightning bolt, while plugged in but not
+charging shows a plug.
 On battery power, neither status symbol appears.
 
 When macOS Low Power Mode is enabled, the progress fill uses the native system
@@ -125,18 +136,22 @@ yellow instead of grey or green. Plug/lightning status remains visible.
 System power-state notifications update this immediately, including changes
 made outside the app in System Settings.
 
-High Power uses a medium violet battery fill/remainder, a stronger violet
-outline (visible even when the green charging fill reaches 100%), and a small double-chevron beside
-the battery. Charging remains green, and plug/lightning indicators remain
-visible. Preferences are read off the main thread
-so power-mode detection does not delay cable-state rendering.
+High Power uses a light purple progress fill, a contrasting grey unfilled area,
+and a purple outline. It stays purple while connected to external power, with
+plug/lightning indicators still visible. The menu-bar icon has no chevrons,
+so the remaining charge is easier to see. Preferences are read off the main
+thread so power-mode detection does not delay cable-state rendering.
 
 The menu follows the native Battery layout: a Battery/percentage header, power
 source and charging status, Energy Mode options (Automatic, Low Power, High Power),
 the energy-app section, and Battery Settings. Circular mode icons mark the selection.
 Launch at Login is in an Inside Battery submenu. Quit is always a top-level menu
 item. There is one app and one build workflow: `dist/Inside Battery.app`.
-Selection uses a blue circle with a white battery glyph. Empty energy results show
+The header's detail rows use smaller grey text and compact spacing. Power source
+and charging status share one line. Battery shapes are slim, with thin outlines.
+The selected Automatic circle is blue, Low Power is yellow, and High Power is
+light purple. Selected outlines stay thin and readable; hovering a mode uses a
+neutral rounded highlight like the native Battery menu. Empty energy results show
 only **No Apps Using Significant Energy**; errors show only **Energy data unavailable**
 with details in the tooltip. Opening the menu keeps the saved High Power styling
 instead of clearing it while waiting for a background preference read.
@@ -162,11 +177,14 @@ unavailable** with a diagnostic tooltip, never a false empty list. A slow reques
 does not block cable updates and changes the loading row to unavailable after
 10 seconds. No extra root helper access is requested.
 
-`--print-energy-apps` runs a read-only diagnostic. The native data query returned
-nil inside this development environment; real app names and Activity Monitor
-highlighting still require testing on an unrestricted desktop. Executable
-self-checks cover parsing, responsible-app deduplication, invalid responses,
-selection command validation, and the Apple event's structure.
+`--print-energy-apps` runs a read-only diagnostic. The live query returned a valid
+empty app list on the development Mac after fixing parsing of unnamed system
+coalitions. Those entries are filtered out; malformed responses and invalid
+named-app identities still report an error. Named-app results and Activity
+Monitor selection are covered by fixtures, but highlighting an actual listed
+app on the desktop remains unverified. Executable self-checks cover parsing,
+responsible-app deduplication, invalid responses, selection command validation,
+and the Apple event's structure.
 
 After building, `sh scripts/verify-helper.sh` checks both pinned signature hashes,
 rejection of a different executable, and the bundle signature. This is not a
@@ -198,6 +216,25 @@ also verify rendering and at least 4.5:1 number contrast for both appearances.
 
 `--print-power-mode` reads the saved battery/adapter modes without changing them.
 
+## In-app updates
+
+Sparkle 2.10.0 checks for updates in the background. Choose **Inside Battery →
+Check for Updates…** to check immediately. Its standard dialog shows the new
+version and release notes, with **Skip This Version**, **Remind Me Later**, and
+**Install Update**. After choosing installation, Sparkle closes the app, replaces
+it, and relaunches it. Silent automatic installation is disabled.
+
+The public update feed and archives are signed with Ed25519, and Sparkle verifies
+updates before extraction. These signatures do not replace Apple's Developer ID
+signing or notarization. If a registered power helper would change, the updater
+blocks in-app installation and explains that a manual upgrade is required.
+Compatible UI updates preserve the helper's pinned trust relationship.
+
+Installation and automatic relaunch passed in a disposable app without a power
+helper. Real Sparkle also downloaded and parsed the public signed feed. Upgrading
+the real app's registered privileged helper remains unverified. See
+[updater setup and verification](packaging/sparkle/README.md) for details.
+
 ## Source versions
 
 Version tags preserve source snapshots. The public repository is
@@ -206,8 +243,8 @@ Generated apps, Swift build artifacts, and local environment files
 are excluded from Git. See [CHANGELOG.md](CHANGELOG.md) for each version's changes
 and verification limits.
 
-The initial snapshot is tagged `v0.1.0`. Version `v0.2.2` is published from
-`release/v0.2.2` as a prerelease with download assets. Publication never pushes
+The initial snapshot is tagged `v0.1.0`. Version `v0.2.3` is published from
+`release/v0.2.3` as a prerelease with download assets. Publication never pushes
 directly to `main`. No source license has been
 selected; publishing source does not itself grant a reuse license.
 
@@ -230,11 +267,27 @@ undoing a specific published change, so shared history remains intact.
 
 The working app remains at `dist/Inside Battery.app`. Release preparation builds
 a separate source-matched app/client/helper set in `.build/release-staging`,
-tests it, and archives it under `dist/releases/v0.2.2`. Checksum-pinned recipes
+tests it, and archives it under `dist/releases/v0.2.3`. Checksum-pinned recipes
 are generated from those exact bytes. The release helper pair differs from the
 development Mac's preserved original pair and needs desktop install testing.
+The 0.2.3 release passed 177 executable self-checks, nested signatures, helper
+signature pinning, ZIP extraction and signed-feed preparation. Version 0.2.2
+previously passed 177 executable self-checks, app/framework/helper signatures, ZIP
+extraction, public download checksum and update signatures passed. Homebrew
+fetch and install dry run passed; the local MacPorts recipe passed lint with
+0 errors and 0 warnings. A fresh Homebrew download also passed checksum,
+extraction and bundle-signature checks, but macOS killed its self-test with
+`SIGKILL`; Gatekeeper assessment rejected the quarantined app. The 177 passing
+checks above were from release preparation, not that downloaded copy. Actual
+package-manager installation and first launch remain unverified.
+
 Developer ID signing, notarization, fresh-install/restart verification and
 package-manager install tests remain required before calling a release stable.
+The development Mac now runs 0.2.3 with Sparkle while retaining its original
+working helper/client pair. Installation verified both files unchanged; a request
+to reapply the current mode completed with saved power preferences unchanged.
+That preserved pair differs from the public archive, so its helper compatibility
+guard may require manual upgrades when checking the public feed.
 
 ## Design constraints
 

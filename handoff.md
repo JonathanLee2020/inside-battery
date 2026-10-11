@@ -1,6 +1,35 @@
 # Inside Battery handoff
 
-Updated: 8 October 2026. There is one app build: `dist/Inside Battery.app`.
+Updated: 11 October 2026. There is one app build: `dist/Inside Battery.app`.
+
+## Current release — 0.2.3
+
+User requested a new version consolidating the current app with Sparkle.
+Branch release/v0.2.3; version 0.2.3/build 5. No functional Sparkle change from
+0.2.2. README corrected to current UI/energy behavior and installation limits.
+Prepared public archive: dist/releases/v0.2.3/InsideBattery-0.2.3-arm64.zip.
+SHA256: dcb147b30eca979996ec2768dac00f2943995d31cfea69dff610a3e00cccca53.
+Verification: 177 checks twice (before/after ZIP), helper pinning, all nested
+signatures, signed archive/feed checks. Public helper hash remains
+8acb282dbff5c5039604e57014ddde8ae6fd9674, matching 0.2.2.
+Full verification output: .build/release-0.2.3-verification.log.
+
+After user quit, installed the staged main/framework/plist into the real app.
+Original helper/client and pinned hash retained byte-for-byte. Stage:
+.build/interface-updates/v0.2.3-helper-preserved.mhemgfur/Inside Battery.app.
+Backup: .build/rollback-backups/interface-install.xYbfzL/Inside Battery.app.
+Local app reopened, plist reports 0.2.3, Sparkle configuration/self-checks pass.
+The retained old client lacks --check: the read-only diagnostic returned its
+usage message, so no read-only connection success is claimed. Instead, applied
+the already-selected AC Power Automatic mode through the old client successfully;
+compared full pmset custom output before/after and confirmed no changes.
+Original temporary root service remains running at PID 79954; no registration
+or service replacement was performed. Fresh public installation still unverified.
+
+Homebrew download of 0.2.2 passed fetch/dry run/checksum/signatures, but downloaded
+self-check process died with SIGKILL and Gatekeeper rejected the quarantined app.
+Apple Developer enrollment was discussed; no signing identity was installed or
+notarization completed. No quarantine bypass was attempted.
 
 ## Published Sparkle release — 0.2.2
 

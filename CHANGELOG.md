@@ -4,6 +4,22 @@ Versions preserve source snapshots and, from 0.2.0, prepared downloadable previe
 
 ## Unreleased
 
+## 0.2.3 — 2026-10-11 (development preview)
+
+- Consolidated current UI and energy-data fixes with the Sparkle updater from
+  0.2.2; version metadata is now 0.2.3/build 5.
+- README now describes the current icons, selected-mode colors, neutral hover,
+  charging details, energy-data parsing and signed install/relaunch flow.
+- Documents the verified Homebrew fetch/dry run and the downloaded preview's
+  Gatekeeper rejection. Developer ID signing and notarization remain pending.
+
+This is a packaging and documentation update; Sparkle behavior is unchanged
+from 0.2.2. Verification: 177 executable checks, helper signature pinning, nested
+signatures, ZIP round-trip and signed feed/archive checks passed. Local 0.2.3
+installed with the original helper/client unchanged; reapplying the current mode
+completed without changing saved preferences. Existing public-build helper
+upgrade and fresh-install verification limits remain.
+
 ## 0.2.2 — 2026-10-08 (development preview)
 
 - Sparkle 2.10.0 integration with Check for Updates, standard update dialog and
