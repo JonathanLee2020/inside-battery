@@ -12,10 +12,12 @@ All five assets uploaded; dedicated update-feed updated with signed 0.2.3 feed.
 Public ZIP checksum/signature and feed signature/version verified. Homebrew fetch
 and dry-run installation passed for 0.2.3. MacPorts lint initially rejected --dir;
 ran from the recipe directory instead: 0 errors/0 warnings (definitions old).
-The real Sparkle probe still received a verified older 0.2.2 feed, while direct
-HTTPS requests got 0.2.3. Sparkle source already ignores local cache, so cache
-source is not established. Latest-version notification remains unverified; no
-cache deletion or override of user settings was attempted.
+The real Sparkle probe initially received a verified older 0.2.2 feed while
+direct HTTPS requests got 0.2.3. A later check received and parsed signed 0.2.3:
+Feed item: 0.2.3, helper=8acb282dbff5c5039604e57014ddde8ae6fd9674
+PASS: Sparkle downloaded and parsed the signed feed; no installation attempted
+It resolved without cache deletion or any override of user settings. Cache
+source was not established; no product code change was needed.
 
 Branch release/v0.2.3; version 0.2.3/build 5. No functional Sparkle change from
 0.2.2. README corrected to current UI/energy behavior and installation limits.

@@ -60,7 +60,6 @@ Sparkle and its bundled components' redistribution notices are in [LICENSE](LICE
 The release publisher attaches these notices to updater-enabled releases.
 
 After the 0.2.3 publication, direct HTTPS checks received and verified the signed
-0.2.3 feed/archive. The standard Sparkle diagnostic still received a valid older
-0.2.2 feed, despite its downloader using reload-ignoring-local-cache policy.
-The cache source is not established; latest-version notification through that
-live diagnostic remains unverified. No cache was deleted or security bypassed.
+0.2.3 feed/archive. The standard Sparkle diagnostic initially received an older
+0.2.2 feed, then received and parsed 0.2.3 on a later check without any settings
+or cache changes. Installation of this release through Sparkle was not attempted.
