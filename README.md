@@ -271,7 +271,11 @@ tests it, and archives it under `dist/releases/v0.2.3`. Checksum-pinned recipes
 are generated from those exact bytes. The release helper pair differs from the
 development Mac's preserved original pair and needs desktop install testing.
 The 0.2.3 release passed 177 executable self-checks, nested signatures, helper
-signature pinning, ZIP extraction and signed-feed preparation. Version 0.2.2
+signature pinning, ZIP extraction and public archive/feed signature verification.
+Homebrew fetch and install dry run of 0.2.3 passed. The local MacPorts recipe
+passed lint with 0 errors and 0 warnings. Its public signed feed shows 0.2.3;
+the standard Sparkle diagnostic still received the older 0.2.2 feed immediately
+after publication, so latest-version notification remains unverified. Version 0.2.2
 previously passed 177 executable self-checks, app/framework/helper signatures, ZIP
 extraction, public download checksum and update signatures passed. Homebrew
 fetch and install dry run passed; the local MacPorts recipe passed lint with

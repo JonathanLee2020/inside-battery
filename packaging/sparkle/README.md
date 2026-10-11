@@ -32,7 +32,7 @@ feed. It refuses to overwrite existing staging files. It never publishes.
 An empty signed bootstrap feed can be prepared by omitting archive and notes.
 
 The configured HTTPS endpoint is the `appcast.xml` asset of a dedicated
-`update-feed` GitHub release. It is live for 0.2.2. The release publisher
+`update-feed` GitHub release. It is live for 0.2.3. The release publisher
 uploads the signed feed snapshot alongside the versioned ZIP, then creates or
 updates that dedicated feed release. Keep versioned archives immutable.
 
@@ -52,9 +52,15 @@ Build, executable checks, nested signatures and feed signing are verified.
 A disposable app without a power helper passed replacement and automatic relaunch
 through the standard Sparkle dialog after the user clicked Install and Relaunch.
 Real Sparkle downloaded and parsed the public HTTPS feed. Public archive checksum
-and Ed25519 signatures matched; Homebrew fetch of 0.2.2 passed.
+and Ed25519 signatures matched; Homebrew fetch and install dry run of 0.2.3 passed.
 Privileged-helper upgrades remain unverified and require manual installation.
 Users on 0.2.1 need one manual/Homebrew upgrade to the first updater-enabled release.
 
 Sparkle and its bundled components' redistribution notices are in [LICENSE](LICENSE).
 The release publisher attaches these notices to updater-enabled releases.
+
+After the 0.2.3 publication, direct HTTPS checks received and verified the signed
+0.2.3 feed/archive. The standard Sparkle diagnostic still received a valid older
+0.2.2 feed, despite its downloader using reload-ignoring-local-cache policy.
+The cache source is not established; latest-version notification through that
+live diagnostic remains unverified. No cache was deleted or security bypassed.
