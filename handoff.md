@@ -2,6 +2,112 @@
 
 Updated: 13 October 2026. There is one app build: `dist/Inside Battery.app`.
 
+## Release 0.2.8 prepared — 13 October 2026
+
+User requested Test Joey after all existing themes, then a new release. Test Joey
+uses the current Joey purple fills (0.80/0.62/0.86 Automatic/Low, 0.78/0.60/0.84
+High) with the previously refined darker grey Automatic border RGB 0.61/0.61/0.63
+at 1.75pt. Joey retains its matching purple Automatic border. Low/High border
+colors remain shared. Test Joey is saved independently under raw ID testJoey.
+Branch release/v0.2.8; version 0.2.8/build 10. Untracked assets/piplup-sprite.gif
+is unrelated and excluded from the release commit.
+
+365 self-checks passed before/after ZIP extraction, including all six themes'
+contrast/rendering/width matrix and Test Joey's final ordering/distinct border.
+Renderer preview regenerated/inspected: dist/design/themes-preview.png.
+Bundle signatures, helper/client pinning, signed archive/feed and ZIP round-trip
+passed. Public helper/client/hash are byte-identical to 0.2.7.
+Archive: dist/releases/v0.2.8/InsideBattery-0.2.8-arm64.zip.
+SHA256: 6a1131e65682fcb8b9089b9a35427618e4ff9eec7a233abf756fcd3063d4abae.
+Build log: .build/release-0.2.8-verification.log.
+Local preserved-helper stage: .build/interface-updates/v0.2.8-helper-preserved.sbvd883l/Inside Battery.app.
+Installed after user confirmed quit; original helper/client unchanged, signatures
+valid, installed executable passed 365 checks and app reopened.
+Backup: .build/rollback-backups/interface-install.arykNa/Inside Battery.app.
+Fresh-install helper approval and actual package installation remain unverified.
+
+## Joey medium purple installed — 13 October 2026
+
+User found Joey still too pale. Automatic/Low now RGB 0.80/0.62/0.86 and High
+0.78/0.60/0.84, replacing 0.86/0.75/0.89 and 0.84/0.73/0.87. Automatic border
+tracks the new purple at 1.75pt. Details/README/CHANGELOG updated.
+The existing charge/remainder check assumed fill was brighter; it now verifies
+the same >=1.1 contrast ratio using max/min luminance so darker fills are valid.
+All 334 checks pass, including numeral contrast and slightly darker High Power.
+Renderer preview regenerated/inspected. Stage signatures valid:
+.build/interface-updates/joey-medium-purple-helper-preserved.ja_kj5fv/Inside Battery.app.
+Build log: .build/joey-medium-purple-build.log. Installed after user confirmed quit.
+Installer preserved original helper/client; signatures and 334 installed checks
+passed. App restarted (PID 2518). Backup:
+.build/rollback-backups/interface-install.iG6Ep5/Inside Battery.app.
+No release/commit/push requested.
+
+## Joey lavender Automatic border installed — 13 October 2026
+
+User requested Joey's purple fill as the border instead of grey and had quit.
+Joey Automatic border now uses progress(for: mode), matching lavender RGB
+0.86/0.75/0.89, at the existing 1.75pt width. Low/High borders unchanged.
+Release build and installed executable passed 334 checks. Renderer preview
+regenerated/inspected; signatures valid and original helper/client unchanged.
+App restarted (PID 1289). Stage:
+.build/interface-updates/joey-purple-border-helper-preserved.gdne25q8/Inside Battery.app.
+Backup: .build/rollback-backups/interface-install.5K7rLh/Inside Battery.app.
+Build log: .build/joey-purple-border-build.log. No release/commit/push requested.
+
+## Joey darker lavender installed — 13 October 2026
+
+User requested Joey slightly darker in all modes while retaining darker High Power.
+Automatic/Low RGB changes from 0.87/0.76/0.90 to 0.86/0.75/0.89; High changes
+from 0.85/0.74/0.88 to 0.84/0.73/0.87. Refined Automatic border retained.
+Release build and installed executable passed 334 checks, including contrast and
+High luminance below Automatic/Low. Renderer preview regenerated/inspected.
+Installed after user confirmed quit; signatures valid, helper/client unchanged,
+app restarted (PID 395). Stage:
+.build/interface-updates/joey-darker-fill-helper-preserved.brevjjxo/Inside Battery.app.
+Backup: .build/rollback-backups/interface-install.z1RMg8/Inside Battery.app.
+Build log: .build/joey-darker-fill-build.log. No release/commit/push requested.
+
+## Joey Automatic border refinement installed — 13 October 2026
+
+User requested a tiny reduction in Joey Automatic border thickness and slightly
+darker grey, still lighter than the original. Border changes from 2pt RGB
+0.64/0.64/0.66 to 1.75pt RGB 0.61/0.61/0.63. Low/High and other themes unchanged.
+Updated border-width matrix for intentional Joey Automatic exception.
+Release build passed 334 self-checks. Renderer preview regenerated/inspected.
+Stage signatures verified:
+.build/interface-updates/joey-refined-border-helper-preserved.6pva9y9t/Inside Battery.app.
+Build log: .build/joey-refined-border-build.log. Installed after user confirmed quit.
+Installer preserved original helper/client; signatures and 334 installed self-checks
+passed. App restarted (PID 99209). Backup:
+.build/rollback-backups/interface-install.BYEg0O/Inside Battery.app.
+No release/commit/push requested.
+
+## Joey lighter grey Automatic border installed — 13 October 2026
+
+User found Joey's grey border too dark and had quit. Joey Automatic border now
+uses opaque light grey RGB 0.64/0.64/0.66 instead of black at 35% opacity.
+Thickness remains 2pt. Low/High colored outlines and other themes unchanged.
+Release rebuild and installed executable passed 334 self-checks. Actual renderer
+preview regenerated/inspected: dist/design/themes-preview.png. Signatures valid;
+installer preserved original helper/client byte-for-byte. App restarted (PID 98459).
+Stage: .build/interface-updates/joey-light-border-helper-preserved.5ipsy_sx/Inside Battery.app.
+Backup: .build/rollback-backups/interface-install.4UUaoS/Inside Battery.app.
+Build log: .build/joey-light-border-build.log. No release/commit/push requested.
+
+## Joey slightly darker High Power installed — 13 October 2026
+
+User requested Joey High Power slightly darker than Automatic. High fill is now
+RGB 0.85/0.74/0.88 versus Automatic/Low 0.87/0.76/0.90. Updated shared-fill
+invariant to verify Joey Low remains equal and High luminance decreases by less
+than 10% on both power sources. README/CHANGELOG updated.
+Build and installed executable passed 334 checks, including contrast. Actual
+renderer preview regenerated/inspected: dist/design/themes-preview.png.
+Installed after user confirmed quit; signatures passed, original helper/client
+unchanged; app restarted (PID 97602). Stage:
+.build/interface-updates/joey-high-helper-preserved.7osfl3fg/Inside Battery.app.
+Backup: .build/rollback-backups/interface-install.QCmbob/Inside Battery.app.
+Build log: .build/joey-high-build.log. No release/commit/push requested.
+
 ## Release 0.2.7 published — 13 October 2026
 
 Published: https://github.com/JonathanLee2020/inside-battery/releases/tag/v0.2.7

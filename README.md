@@ -7,24 +7,24 @@ bundles `Resources/AppIcon.icns` for Finder, Launchpad and system dialogs; the
 live menu-bar icon continues to show charge level and power mode.
 
 Choose **Themes** for a saved palette with color-swatch previews:
-**💜 Joey 💜** (the default warm-lavender palette), **turtwig** (green in every mode), **Yoshi** (green Automatic, yellow Low Power, light-lavender High Power),
-**Piplup** (cool blue), or **Chimchar** (soft red). Themes has its own menu section, separated from Preferences and Quit. Themes update
+**💜 Joey 💜** (default medium purple, slightly darker in High Power), **turtwig** (green in every mode), **Yoshi** (green Automatic, yellow Low Power, light-lavender High Power),
+**Piplup** (cool blue), **Chimchar** (soft red), or **Test Joey** (Joey purple with a grey Automatic border, listed last). Themes has its own menu section, separated from Preferences and Quit. Themes update
 the menu-bar battery immediately. Themes is a
 separate top-level row below Preferences, with a four-color icon. The app icon
 keeps its purple-and-green artwork.
 
 ## Downloads and package managers
 
-Version **0.2.7** is available as an **Apple Silicon development preview**, with
+Version **0.2.8** is available as an **Apple Silicon development preview**, with
 a ZIP archive and SHA-256 manifest on
-[GitHub Releases](https://github.com/JonathanLee2020/inside-battery/releases/tag/v0.2.7).
+[GitHub Releases](https://github.com/JonathanLee2020/inside-battery/releases/tag/v0.2.8).
 macOS 13 or newer is required; Intel builds are not included.
 
 The preview is ad-hoc signed, not Developer ID signed or notarized. Gatekeeper
 may block downloaded copies. Fresh-install helper approval, power switching,
 and persistence after restarting are unverified for the release build. The
 development Mac uses a temporary helper recovery, not a public installer.
-Read [the release notes](packaging/releases/v0.2.7.md) before installing.
+Read [the release notes](packaging/releases/v0.2.8.md) before installing.
 
 Versions 0.2.1 and earlier require one manual or Homebrew upgrade to get the
 Sparkle updater. From 0.2.2, use **Preferences → Check for Updates…** for
@@ -252,8 +252,8 @@ Generated apps, Swift build artifacts, and local environment files
 are excluded from Git. See [CHANGELOG.md](CHANGELOG.md) for each version's changes
 and verification limits.
 
-The initial snapshot is tagged `v0.1.0`. Version `v0.2.7` is published from
-`release/v0.2.7` as a prerelease with download assets. Publication never pushes
+The initial snapshot is tagged `v0.1.0`. Version `v0.2.8` is published from
+`release/v0.2.8` as a prerelease with download assets. Publication never pushes
 directly to `main`. No source license has been
 selected; publishing source does not itself grant a reuse license.
 
@@ -276,13 +276,12 @@ undoing a specific published change, so shared history remains intact.
 
 The working app remains at `dist/Inside Battery.app`. Release preparation builds
 a separate source-matched app/client/helper set in `.build/release-staging`,
-tests it, and archives it under `dist/releases/v0.2.7`. Checksum-pinned recipes
+tests it, and archives it under `dist/releases/v0.2.8`. Checksum-pinned recipes
 are generated from those exact bytes. The release helper pair differs from the
 development Mac's preserved original pair and needs desktop install testing.
-The 0.2.7 release includes a separate Themes section, cooler blue Piplup,
-and soft-red Chimchar. 332 self-checks, bundle signatures, helper pinning, and
-the signed feed/archive passed. The public helper pair is unchanged from 0.2.6.
-Publication details are recorded
+The 0.2.8 release includes richer Joey purple and the final Test Joey theme.
+365 self-checks, bundle signatures, helper pinning, and signed feed/archive
+passed. Public helpers are unchanged from 0.2.7. Publication details are recorded
 in [handoff.md](handoff.md).
 
 The 0.2.4 release passed 177 checks, including number contrast, selected-circle
@@ -309,7 +308,7 @@ package-manager installation and first launch remain unverified.
 
 Developer ID signing, notarization, fresh-install/restart verification and
 package-manager install tests remain required before calling a release stable.
-The development Mac now runs 0.2.6 with Sparkle while retaining its original
+The development Mac now runs 0.2.8 with Sparkle while retaining its original
 working helper/client pair. Installation verified both files unchanged; a request
 to reapply the current mode completed with saved power preferences unchanged.
 That preserved pair differs from the public archive, so its helper compatibility

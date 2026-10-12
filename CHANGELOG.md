@@ -4,6 +4,16 @@ Versions preserve source snapshots and, from 0.2.0, prepared downloadable previe
 
 ## Unreleased
 
+## 0.2.8 — 2026-10-13 (development preview)
+
+- Added Test Joey as the final theme, with Joey purple fills and a darker grey
+  Automatic border at 1.75pt.
+
+- Joey Automatic uses a slightly thinner 1.75pt lavender border matching its fill.
+
+- Joey uses medium purple in every mode, with High Power still
+  slightly darker than Automatic and Low Power.
+
 ## 0.2.7 — 2026-10-13 (development preview)
 
 - Piplup is slightly darker and bluer; Chimchar uses soft red to

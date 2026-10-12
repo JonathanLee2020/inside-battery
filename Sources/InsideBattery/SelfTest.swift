@@ -170,8 +170,8 @@ enum SelfTest {
         let highLuminance = luminance(highFill)
         let highEmptyLuminance = luminance(BatteryIcon.colors(for: highPower, appearance: appearance).surface)
         checks += [
-            (highFill.blueComponent - highFill.greenComponent >= 0.12 && highFill.redComponent - highFill.greenComponent >= 0.1, "Joey interior remains warm lavender in High Power"),
-            ((highLuminance + 0.05) / (highEmptyLuminance + 0.05) >= 1.1, "theme charge fill remains distinct from the empty remainder"),
+            (highFill.blueComponent - highFill.greenComponent >= 0.12 && highFill.redComponent - highFill.greenComponent >= 0.1, "Joey interior remains purple in High Power"),
+            ((max(highLuminance, highEmptyLuminance) + 0.05) / (min(highLuminance, highEmptyLuminance) + 0.05) >= 1.1, "theme charge fill remains distinct from the empty remainder"),
             (highPower.accessibilityLabel.contains("High Power Mode"), "announces High Power to VoiceOver"),
             (!BatteryState(percentage: 52, isCharging: false, isLowPowerMode: true, isHighPowerMode: true).isHighPowerMode, "Low Power takes precedence over stale High Power state"),
             (BatteryIcon.colors(for: highCharging, appearance: appearance).progress == highFill, "High Power retains its purple charge fill while charging"),
@@ -291,6 +291,10 @@ enum SelfTest {
             checks.append((BatteryTheme.selected(in: defaults) == .joey, "unknown saved theme uses default"))
             defaults.removePersistentDomain(forName: suite)
         } else { checks.append((false, "creates isolated theme preference test store")) }
+        checks.append((BatteryTheme.allCases.last == .testJoey, "Test Joey appears after all other themes"))
+        let testBorder = BatteryTheme.testJoey.border(for: .automatic, externalPower: false)!.color
+        checks.append((testBorder != BatteryTheme.joey.border(for: .automatic, externalPower: false)!.color,
+                       "Test Joey has a distinct Automatic border"))
         let gold = BatteryTheme.outline(for: .low)!.usingColorSpace(.sRGB)!
         checks.append((gold.redComponent > gold.greenComponent && gold.greenComponent > gold.blueComponent
                        && luminance(gold) < luminance(.systemYellow), "Low Power outline is deeper gold"))
@@ -310,6 +314,12 @@ enum SelfTest {
                                 && luminance(fill) > luminance(theme.selection(for: mode)) * 0.75
                         checks.append((matches, "Yoshi bright mode fill: \(mode.title), external=\(external)"))
                     }
+                } else if theme == .joey || theme == .testJoey {
+                    let high = theme.progress(for: .high, externalPower: external)
+                    checks.append((theme.progress(for: .low, externalPower: external) == fill,
+                                   "Joey Low Power retains Automatic fill: external=\(external)"))
+                    checks.append((luminance(high) < luminance(fill) && luminance(high) > luminance(fill) * 0.9,
+                                   "Joey High Power is only slightly darker: external=\(external)"))
                 } else {
                     checks.append((theme.progress(for: .low, externalPower: external) == fill
                                    && theme.progress(for: .high, externalPower: external) == fill,
@@ -330,8 +340,9 @@ enum SelfTest {
         for theme in BatteryTheme.allCases {
             for mode in PowerMode.allCases {
                 for external in [false, true] {
-                    checks.append((theme.border(for: mode, externalPower: external)?.width == 2,
-                                   "uniform 2pt border: \(theme.title), \(mode.title), external=\(external)"))
+                    let expectedWidth: CGFloat = (theme == .joey || theme == .testJoey) && mode == .automatic ? 1.75 : 2
+                    checks.append((theme.border(for: mode, externalPower: external)?.width == expectedWidth,
+                                   "border width: \(theme.title), \(mode.title), external=\(external)"))
                 }
             }
         }

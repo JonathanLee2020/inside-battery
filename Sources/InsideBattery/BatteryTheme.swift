@@ -6,6 +6,7 @@ enum BatteryTheme: String, CaseIterable, Sendable {
     case yoshi
     case piplup = "tidepool"
     case chimchar = "ember"
+    case testJoey
 
     static let preferenceKey = "batteryTheme"
 
@@ -26,16 +27,18 @@ enum BatteryTheme: String, CaseIterable, Sendable {
         case .yoshi: "Yoshi"
         case .piplup: "Piplup"
         case .chimchar: "Chimchar"
+        case .testJoey: "Test Joey"
         }
     }
 
     var detail: String {
         switch self {
-        case .joey: "Warm lavender battery fill with a subtle yellow undertone."
+        case .joey: "Medium purple battery fill, slightly darker in High Power."
         case .turtwig: "Green battery fill in every energy mode."
         case .yoshi: "Automatic green on both power sources, Low Power yellow, High Power light lavender, with green charging symbols."
         case .piplup: "Cool blue battery fill."
         case .chimchar: "Soft red battery fill."
+        case .testJoey: "Joey purple with a darker grey Automatic border."
         }
     }
 
@@ -44,12 +47,13 @@ enum BatteryTheme: String, CaseIterable, Sendable {
     }
 
     func progress(for mode: PowerMode, externalPower: Bool = false) -> NSColor {
+        if (self == .joey || self == .testJoey) && mode == .high { return rgb(0.78, 0.60, 0.84) }
         if self == .yoshi {
             if mode == .low { return selection(for: mode) }
             if mode == .high { return rgb(0.82, 0.65, 0.94) }
         }
         return switch self {
-        case .joey: rgb(0.87, 0.76, 0.90)
+        case .joey, .testJoey: rgb(0.80, 0.62, 0.86)
         case .turtwig: rgb(0.35, 0.95, 0.50)
         case .yoshi: rgb(0.55, 0.87, 0.65)
         case .piplup: rgb(0.57, 0.82, 0.90)
@@ -74,6 +78,8 @@ enum BatteryTheme: String, CaseIterable, Sendable {
     }
 
     func border(for mode: PowerMode, externalPower: Bool) -> (color: NSColor, width: CGFloat)? {
+        if self == .joey && mode == .automatic { return (progress(for: mode, externalPower: externalPower), 1.75) }
+        if self == .testJoey && mode == .automatic { return (rgb(0.61, 0.61, 0.63), 1.75) }
         if let color = Self.outline(for: mode) { return (color, 2.0) }
         return nil
     }
