@@ -2,7 +2,14 @@
 
 Updated: 13 October 2026. There is one app build: `dist/Inside Battery.app`.
 
-## Release 0.2.7 prepared — 13 October 2026
+## Release 0.2.7 published — 13 October 2026
+
+Published: https://github.com/JonathanLee2020/inside-battery/releases/tag/v0.2.7
+Source commit d015fbf; tap commit 315360d. Release branch pushed; non-main tap
+tracking branch fast-forwarded. Five assets published; signed update-feed now
+reports 0.2.7. Downloaded public ZIP matches manifest SHA-256; public feed bytes
+match the verified signed feed. Real local 0.2.6 SPUUpdater received and parsed
+0.2.7; no installation attempted during this diagnostic.
 
 User requested release of the separate Themes section, cooler Piplup, and soft-red
 Chimchar. Branch release/v0.2.7; version 0.2.7/build 9. Untracked
