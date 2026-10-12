@@ -2,7 +2,14 @@
 
 Updated: 13 October 2026. There is one app build: `dist/Inside Battery.app`.
 
-## Release 0.2.9 prepared — 13 October 2026
+## Release 0.2.9 published — 13 October 2026
+
+Published: https://github.com/JonathanLee2020/inside-battery/releases/tag/v0.2.9
+Source commit 328e92f; tap commit 72117ba. Release branch pushed; non-main tap
+tracking branch fast-forwarded. All five assets published; signed update-feed
+reports 0.2.9. Downloaded public ZIP matches manifest checksum; public feed bytes
+match the verified signed feed. Real local 0.2.8 SPUUpdater received and parsed
+0.2.9; no installation attempted during this diagnostic.
 
 User requested release of Test Joey's shared darker grey Automatic border.
 Branch release/v0.2.9; version 0.2.9/build 11. Test Joey uses the same black-at-35%
