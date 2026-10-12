@@ -2,18 +2,22 @@
 
 A tiny, native macOS menu-bar app that puts the percentage **inside** its battery icon. Quick power switching uses an optional native privileged helper. Sparkle provides signed in-app updates; see [updater setup and verification status](packaging/sparkle/README.md).
 
+The app icon is an original green battery on a purple rounded tile. The build
+bundles `Resources/AppIcon.icns` for Finder, Launchpad and system dialogs; the
+live menu-bar icon continues to show charge level and power mode.
+
 ## Downloads and package managers
 
-Version **0.2.3** is available as an **Apple Silicon development preview**, with
+Version **0.2.4** is available as an **Apple Silicon development preview**, with
 a ZIP archive and SHA-256 manifest on
-[GitHub Releases](https://github.com/JonathanLee2020/inside-battery/releases/tag/v0.2.3).
+[GitHub Releases](https://github.com/JonathanLee2020/inside-battery/releases/tag/v0.2.4).
 macOS 13 or newer is required; Intel builds are not included.
 
 The preview is ad-hoc signed, not Developer ID signed or notarized. Gatekeeper
 may block downloaded copies. Fresh-install helper approval, power switching,
 and persistence after restarting are unverified for the release build. The
 development Mac uses a temporary helper recovery, not a public installer.
-Read [the release notes](packaging/releases/v0.2.3.md) before installing.
+Read [the release notes](packaging/releases/v0.2.4.md) before installing.
 
 Versions 0.2.1 and earlier require one manual or Homebrew upgrade to get the
 Sparkle updater. From 0.2.2, use **Inside Battery → Check for Updates…** for
@@ -117,30 +121,21 @@ copies before switching to the updated app. The menu has no standalone disable a
 Developer ID signing and notarization provide the normal trusted-download
 experience; the current preview remains development-only.
 
-The Android-inspired icon uses bold 10.5-point black tabular numbers inside a
-grey battery. A lighter grey fill shows charge level; when connected to external
-power, that fill turns green and a status symbol appears to the right of the
-battery terminal. Black digits stay readable over both filled and unfilled
-areas. The icon is 30 × 18 points on battery and 35 × 18 on external power,
-with the same palette on light and dark menu bars. Automatic sizing avoids
-reserving an unused charging-symbol slot while unplugged.
+The compact menu-bar battery uses bold 10.5-point tabular numbers inside the
+battery. Automatic uses light purple, Low Power uses warm lavender with a subtle
+gold tint, and High Power uses dark purple. These colors also appear in the
+selected Energy Mode circles. High Power uses white numbers and a darker empty
+remainder; the other modes use black numbers and a grey remainder. Charge level
+remains visible, with at least 4.5:1 number contrast in both appearances.
 
-The menu distinguishes actively charging from plugged in but not charging (for
-example, when charging is paused). In Automatic mode, both plugged-in states
-show green; actively charging shows a lightning bolt, while plugged in but not
-charging shows a plug.
-On battery power, neither status symbol appears.
-
-When macOS Low Power Mode is enabled, the progress fill uses the native system
-yellow instead of grey or green. Plug/lightning status remains visible.
-System power-state notifications update this immediately, including changes
-made outside the app in System Settings.
-
-High Power uses a light purple progress fill, a contrasting grey unfilled area,
-and a purple outline. It stays purple while connected to external power, with
-plug/lightning indicators still visible. The menu-bar icon has no chevrons,
-so the remaining charge is easier to see. Preferences are read off the main
-thread so power-mode detection does not delay cable-state rendering.
+The icon is 30 × 18 points on battery and 35 × 18 on external power. Automatic
+sizing avoids reserving an unused charging-symbol slot while unplugged. Mode
+colors stay the same while connected: charging shows a lightning bolt and
+plugged in but not charging shows a plug. These symbols use white on dark menu
+bars and black on light menu bars. No status symbol appears on battery power.
+System power-state notifications update the display, including changes made in
+System Settings. Preferences are read off the main thread so power-mode detection
+does not delay cable-state rendering. The menu-bar icon has no chevrons.
 
 The menu follows the native Battery layout: a Battery/percentage header, power
 source and charging status, Energy Mode options (Automatic, Low Power, High Power),
@@ -149,8 +144,8 @@ Launch at Login is in an Inside Battery submenu. Quit is always a top-level menu
 item. There is one app and one build workflow: `dist/Inside Battery.app`.
 The header's detail rows use smaller grey text and compact spacing. Power source
 and charging status share one line. Battery shapes are slim, with thin outlines.
-The selected Automatic circle is blue, Low Power is yellow, and High Power is
-light purple. Selected outlines stay thin and readable; hovering a mode uses a
+The selected Automatic circle is light purple, Low Power is warm lavender, and
+High Power is dark purple. Selected outlines stay thin and readable; hovering a mode uses a
 neutral rounded highlight like the native Battery menu. Empty energy results show
 only **No Apps Using Significant Energy**; errors show only **Energy data unavailable**
 with details in the tooltip. Opening the menu keeps the saved High Power styling
@@ -243,8 +238,8 @@ Generated apps, Swift build artifacts, and local environment files
 are excluded from Git. See [CHANGELOG.md](CHANGELOG.md) for each version's changes
 and verification limits.
 
-The initial snapshot is tagged `v0.1.0`. Version `v0.2.3` is published from
-`release/v0.2.3` as a prerelease with download assets. Publication never pushes
+The initial snapshot is tagged `v0.1.0`. Version `v0.2.4` is published from
+`release/v0.2.4` as a prerelease with download assets. Publication never pushes
 directly to `main`. No source license has been
 selected; publishing source does not itself grant a reuse license.
 
@@ -267,7 +262,7 @@ undoing a specific published change, so shared history remains intact.
 
 The working app remains at `dist/Inside Battery.app`. Release preparation builds
 a separate source-matched app/client/helper set in `.build/release-staging`,
-tests it, and archives it under `dist/releases/v0.2.3`. Checksum-pinned recipes
+tests it, and archives it under `dist/releases/v0.2.4`. Checksum-pinned recipes
 are generated from those exact bytes. The release helper pair differs from the
 development Mac's preserved original pair and needs desktop install testing.
 The 0.2.3 release passed 177 executable self-checks, nested signatures, helper
@@ -293,6 +288,14 @@ That preserved pair differs from the public archive, so its helper compatibility
 guard may require manual upgrades when checking the public feed.
 
 ## Design constraints
+
+To regenerate the app icon from its vector drawing:
+
+```sh
+swiftc -sdk "$(xcrun --show-sdk-path)" scripts/render-app-icon.swift -o .build/render-app-icon
+.build/render-app-icon
+iconutil -c icns .build/app-icon.iconset -o Resources/AppIcon.icns
+```
 
 - The battery is read through Apple's public IOKit power-source API.
 - It subscribes to macOS power-source notifications instead of polling. Cable and

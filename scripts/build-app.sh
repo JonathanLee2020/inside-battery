@@ -32,6 +32,7 @@ BIN_DIR="$(swift_build --show-bin-path)"
 mkdir -p "$APP_DIR/Contents/MacOS" "$APP_DIR/Contents/Resources" "$APP_DIR/Contents/Helpers" "$APP_DIR/Contents/Library/LaunchDaemons"
 cp "$BIN_DIR/InsideBattery" "$APP_DIR/Contents/MacOS/InsideBattery"
 cp Resources/Info.plist "$APP_DIR/Contents/Info.plist"
+cp Resources/AppIcon.icns "$APP_DIR/Contents/Resources/AppIcon.icns"
 FRAMEWORK='.build/artifacts/sparkle/Sparkle/Sparkle.xcframework/macos-arm64_x86_64/Sparkle.framework'
 mkdir -p "$APP_DIR/Contents/Frameworks"
 ditto "$FRAMEWORK" "$APP_DIR/Contents/Frameworks/Sparkle.framework"

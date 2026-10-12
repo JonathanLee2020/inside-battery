@@ -4,6 +4,20 @@ Versions preserve source snapshots and, from 0.2.0, prepared downloadable previe
 
 ## Unreleased
 
+## 0.2.4 — 2026-10-12 (development preview)
+
+- Purple app-icon tile with a green battery fill, bundled at every macOS size.
+- Automatic uses light purple; Low Power uses warm lavender with a subtle gold
+  tint; High Power uses dark purple. Menu-bar progress and selected circles match.
+- High Power uses white numerals and a darker empty remainder to keep charge
+  level legible. Charging accessories stay visible on light and dark menu bars.
+- Retains Sparkle's signed update dialog and install/relaunch flow. The public
+  helper/client pair matches 0.2.3, making this a compatible in-app update.
+
+Verification: 177 checks including number contrast and selected-icon rendering,
+helper hash equality with 0.2.3, nested signatures, ZIP round-trip and signed
+archive/feed preparation passed. Fresh public installation remains unverified.
+
 ## 0.2.3 — 2026-10-11 (development preview)
 
 - Consolidated current UI and energy-data fixes with the Sparkle updater from

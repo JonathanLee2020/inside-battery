@@ -26,6 +26,9 @@ if [ -d "$STAGED/Contents/Frameworks/Sparkle.framework" ]; then
     /usr/bin/ditto "$STAGED/Contents/Frameworks/Sparkle.framework" "$APP/Contents/Frameworks/Sparkle.framework"
     /bin/cp "$STAGED/Contents/Info.plist" "$APP/Contents/Info.plist"
 fi
+if [ -f "$STAGED/Contents/Resources/AppIcon.icns" ]; then
+    /bin/cp "$STAGED/Contents/Resources/AppIcon.icns" "$APP/Contents/Resources/AppIcon.icns"
+fi
 /usr/bin/codesign --force --sign - "$APP"
 /usr/bin/codesign --verify --deep --strict "$APP"
 /usr/bin/cmp "$APP/Contents/Helpers/InsideBatteryPowerClient" "$BACKUP/Inside Battery.app/Contents/Helpers/InsideBatteryPowerClient"

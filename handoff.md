@@ -1,6 +1,49 @@
 # Inside Battery handoff
 
-Updated: 11 October 2026. There is one app build: `dist/Inside Battery.app`.
+Updated: 12 October 2026. There is one app build: `dist/Inside Battery.app`.
+
+## Color and app-icon release — 0.2.4
+
+User requested publication with Sparkle notification for existing downloads.
+Branch release/v0.2.4; version 0.2.4/build 6. App icon now uses the approved B
+palette (purple tile, green battery). Mode palette: Automatic light purple
+(0.85/0.74/0.95), Low Power user-approved warm lavender with gold tint
+(0.87/0.81/0.80), High Power dark purple (0.48/0.24/0.69). Shared colors cover
+menu-bar progress and selected mode circles. Dark High Power uses white numerals
+and dark empty area (0.20/0.18/0.23); accessory ink is black/white by appearance.
+177 checks passed, including contrast and selected-circle raster checks. Archive
+round-trip, nested signatures, exact helper pinning and signed feed passed.
+SHA256: 595bb25bad99d449c61bbf7e171bbe9352fd8663ef91cd45c54fc16e2eb1f62d.
+Public helper hash matches 0.2.3 exactly: 8acb282dbff5c5039604e57014ddde8ae6fd9674.
+Existing public 0.2.2/0.2.3 copies with automatic checks enabled can receive this
+compatible update on their next Sparkle check; notifications are not push events.
+Older versions without Sparkle still need a manual upgrade.
+
+Local stage retains original helper/client and passed 177 checks, signatures and
+updater startup: .build/interface-updates/v0.2.4-helper-preserved.id3g75c5/Inside Battery.app.
+Asked user to quit before installation. No helper registration will be changed.
+Preview: dist/design/0.2.4-mode-colors.png; renderer sources retained locally.
+Build verification: .build/release-0.2.4-verification.log.
+
+## Installed app icon update — 12 October 2026
+
+User requested a purple app icon in the direction of Flaticon's battery 668277.
+Created original AppKit vector artwork (no reference asset is bundled): a dark
+rounded tile, thin pale battery outline and lavender-purple charge fill.
+Resources/AppIcon.png is the 1024px preview; Resources/AppIcon.icns includes all
+ten macOS representations. Regenerate with scripts/render-app-icon.swift and
+iconutil. Resources/Info.plist declares CFBundleIconFile=AppIcon; build-app.sh
+copies the ICNS. Interface installer now also copies the icon.
+Separate source build passed 177 checks, signature validation and icon-copy
+comparison. Preserved-helper stage also passed 177 checks and signatures:
+.build/interface-updates/purple-app-icon.puf5ums7/Inside Battery.app.
+Original main/helper/client are identical to the running local app in that stage.
+After user confirmed quit, installed the icon and plist and reopened the app.
+Installer verified original helper/client byte-for-byte unchanged; 177 executable
+checks, complete signatures, installed ICNS comparison and native macOS icon
+loading passed. Backup: .build/rollback-backups/interface-install.ZN6Ecj/Inside Battery.app.
+No release, commit or push requested.
+GitHub 0.2.3 archive remains unchanged; changes are under Unreleased.
 
 ## Published current release — 0.2.3
 

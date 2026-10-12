@@ -63,14 +63,14 @@ enum SelfTest {
                let rim = bitmap.colorAt(x: bitmap.pixelsWide / 8, y: bitmap.pixelsHigh / 2)?.usingColorSpace(.sRGB) {
                 checks.append((corner.alphaComponent < 0.1, "selected \(mode.title) icon has transparent corners"))
                 let expectedHue: Bool = switch mode {
-                case .automatic: rim.blueComponent > rim.redComponent + 0.3
-                case .low: rim.redComponent > 0.7 && rim.greenComponent > 0.5 && rim.blueComponent < 0.4
+                case .automatic: rim.blueComponent > rim.greenComponent + 0.15 && rim.redComponent > rim.greenComponent + 0.05
+                case .low: rim.redComponent > 0.8 && rim.greenComponent > 0.7 && rim.blueComponent > 0.7 && rim.redComponent > rim.blueComponent + 0.03
                 case .high: rim.blueComponent - rim.greenComponent > 0.2 && rim.redComponent - rim.greenComponent > 0.1
                 }
                 checks.append((expectedHue, "selected \(mode.title) circle uses its energy-mode color"))
                 if mode == .automatic, let center = bitmap.colorAt(x: bitmap.pixelsWide / 2, y: bitmap.pixelsHigh / 2)?.usingColorSpace(.sRGB) {
-                    checks.append((center.redComponent > 0.9 && center.greenComponent > 0.9 && center.blueComponent > 0.9,
-                                   "selected Automatic icon retains a white battery rather than a blue square"))
+                    checks.append((center.redComponent < 0.1 && center.greenComponent < 0.1 && center.blueComponent < 0.1,
+                                   "selected Automatic icon retains a dark battery rather than a tinted square"))
                 }
             } else { checks.append((false, "selected \(mode.title) icon rasterizes for pixel verification")) }
         }
@@ -145,7 +145,7 @@ enum SelfTest {
             (pluggedIn.isExternalPowerConnected && !pluggedIn.isCharging, "detects AC power when charging is paused"),
             (!unplugged.isExternalPowerConnected, "detects battery power after unplugging"),
             (pluggedIn.accessibilityLabel == "Battery 73 percent, plugged in, not charging", "accurately describes plugged-in status"),
-            (BatteryIcon.colors(for: pluggedIn, appearance: appearance).progress == BatteryIcon.colors(for: active, appearance: appearance).progress, "uses green for both active and paused charging"),
+            (BatteryIcon.colors(for: pluggedIn, appearance: appearance).progress == BatteryIcon.colors(for: active, appearance: appearance).progress, "uses Automatic lavender for both active and paused charging"),
             (BatteryIcon.image(for: pluggedIn, appearance: appearance).tiffRepresentation != BatteryIcon.image(for: unplugged, appearance: appearance).tiffRepresentation, "renders plugged-in and unplugged states differently")
         ]
 
@@ -170,7 +170,7 @@ enum SelfTest {
         let highLuminance = luminance(highFill)
         let highEmptyLuminance = luminance(BatteryIcon.colors(for: highPower, appearance: appearance).surface)
         checks += [
-            (highFill.blueComponent - highFill.greenComponent >= 0.2 && highFill.redComponent - highFill.greenComponent >= 0.1, "lighter High Power fill remains visibly violet"),
+            (highFill.blueComponent - highFill.greenComponent >= 0.2 && highFill.redComponent - highFill.greenComponent >= 0.1, "dark High Power fill remains visibly violet"),
             ((highLuminance + 0.05) / (highEmptyLuminance + 0.05) >= 1.4, "High Power charge fill remains distinct from the empty remainder"),
             (highPower.accessibilityLabel.contains("High Power Mode"), "announces High Power to VoiceOver"),
             (!BatteryState(percentage: 52, isCharging: false, isLowPowerMode: true, isHighPowerMode: true).isHighPowerMode, "Low Power takes precedence over stale High Power state"),
@@ -188,8 +188,8 @@ enum SelfTest {
             (PowerModeController.command(for: .automatic, profile: .adapter, unified: true) == "/usr/bin/pmset -c powermode 0", "Automatic command changes only adapter profile"),
             (PowerModeController.command(for: .high, profile: .adapter, unified: true) == "/usr/bin/pmset -c powermode 2", "High Power command uses unified setting"),
             (PowerModeController.command(for: .automatic, profile: .battery, unified: false, highPowerAvailable: false) == "/usr/bin/pmset -b lowpowermode 0", "legacy Automatic avoids unsupported High Power switch"),
-            (BatteryIcon.colors(for: lowPowerBattery, appearance: appearance).progress == .systemYellow, "Low Power uses system yellow"),
-            (BatteryIcon.colors(for: lowPowerCharging, appearance: appearance).progress == .systemYellow, "Low Power yellow takes precedence over charging green"),
+            (BatteryIcon.colors(for: lowPowerBattery, appearance: appearance).progress == BatteryIcon.lowPowerColor, "Low Power uses warm gold-tinted lavender"),
+            (BatteryIcon.colors(for: lowPowerCharging, appearance: appearance).progress == BatteryIcon.lowPowerColor, "Low Power retains warm lavender while charging"),
             (lowPowerBattery.accessibilityLabel.contains("Low Power Mode"), "announces Low Power Mode to VoiceOver")
         ]
 

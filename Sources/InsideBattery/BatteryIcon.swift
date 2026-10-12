@@ -2,21 +2,19 @@ import AppKit
 
 enum BatteryIcon {
     static let size = NSSize(width: 35, height: 18)
-    static let highPowerColor = NSColor(srgbRed: 0.86, green: 0.69, blue: 0.98, alpha: 1)
+    static let automaticColor = NSColor(srgbRed: 0.85, green: 0.74, blue: 0.95, alpha: 1)
+    static let lowPowerColor = NSColor(srgbRed: 0.87, green: 0.81, blue: 0.80, alpha: 1)
+    static let highPowerColor = NSColor(srgbRed: 0.48, green: 0.24, blue: 0.69, alpha: 1)
 
-    // Black numerals stay readable over both the grey remainder and the charge fill.
+    // Dark High Power uses white numerals on both the fill and empty remainder.
     static func colors(for state: BatteryState, appearance: NSAppearance?) -> (surface: NSColor, number: NSColor, progress: NSColor) {
-        let surface = state.isHighPowerMode && state.isPresent
-            ? NSColor(srgbRed: 0.62, green: 0.62, blue: 0.66, alpha: 1)
+        let high = state.isHighPowerMode && state.isPresent
+        let surface = high
+            ? NSColor(srgbRed: 0.20, green: 0.18, blue: 0.23, alpha: 1)
             : NSColor(srgbRed: 0.72, green: 0.72, blue: 0.72, alpha: 1)
-        // Use the native system yellow, matching macOS's semantic Low Power color.
-        let progress = state.isLowPowerMode && state.isPresent ? NSColor.systemYellow
-            : state.isHighPowerMode && state.isPresent
-            ? highPowerColor
-            : state.isExternalPowerConnected && state.isPresent
-            ? NSColor(srgbRed: 0.35, green: 0.95, blue: 0.5, alpha: 1)
-            : NSColor(srgbRed: 0.9, green: 0.9, blue: 0.9, alpha: 1)
-        return (surface, .black, progress)
+        let progress = state.isLowPowerMode && state.isPresent ? lowPowerColor
+            : high ? highPowerColor : automaticColor
+        return (surface, high ? .white : .black, progress)
     }
 
     static func image(for state: BatteryState, appearance: NSAppearance?) -> NSImage {
@@ -48,7 +46,7 @@ enum BatteryIcon {
 
         // Keep the silhouette visible against a light menu bar, including at 100%.
         (state.isHighPowerMode && state.isPresent
-            ? NSColor(srgbRed: 0.76, green: 0.52, blue: 0.92, alpha: 1)
+            ? highPowerColor
             : NSColor.black.withAlphaComponent(0.35)).setStroke()
         bodyPath.lineWidth = state.isHighPowerMode && state.isPresent ? 1.5 : 0.75
         bodyPath.stroke()
@@ -58,7 +56,7 @@ enum BatteryIcon {
         if state.isExternalPowerConnected && state.isPresent {
             // Keep a fixed-size accessory slot beside the battery terminal.
             let dark = appearance?.bestMatch(from: [.aqua, .darkAqua]) == .darkAqua
-            (dark ? palette.progress : palette.number).setFill()
+            (dark ? NSColor.white : .black).setFill()
             if state.isCharging {
                 let bolt = NSBezierPath()
                 bolt.move(to: NSPoint(x: 33.5, y: 14))
