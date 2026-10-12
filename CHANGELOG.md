@@ -4,6 +4,13 @@ Versions preserve source snapshots and, from 0.2.0, prepared downloadable previe
 
 ## Unreleased
 
+## 0.2.7 — 2026-10-13 (development preview)
+
+- Piplup is slightly darker and bluer; Chimchar uses soft red to
+  distinguish it from Low Power yellow.
+
+- Themes now occupies its own menu section, separated from Preferences and Quit.
+
 ## 0.2.6 — 2026-10-13 (development preview)
 
 - Renamed Meadow to turtwig, Tidepool to Piplup, and Ember to Chimchar;

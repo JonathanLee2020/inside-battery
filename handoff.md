@@ -2,6 +2,62 @@
 
 Updated: 13 October 2026. There is one app build: `dist/Inside Battery.app`.
 
+## Release 0.2.7 prepared — 13 October 2026
+
+User requested release of the separate Themes section, cooler Piplup, and soft-red
+Chimchar. Branch release/v0.2.7; version 0.2.7/build 9. Untracked
+assets/piplup-sprite.gif remains unrelated and excluded from the release commit.
+
+332 executable self-checks passed before/after ZIP extraction. Bundle signatures,
+helper/client pinning, signed archive/feed, and ZIP round-trip passed. Public
+helper/client and pinned hash are byte-identical to 0.2.6.
+Archive: dist/releases/v0.2.7/InsideBattery-0.2.7-arm64.zip.
+SHA256: a472bd327db825cf57cf4019fd3611da7a024171451757f77cb9a1b8c6d96d5b.
+Build log: .build/release-0.2.7-verification.log.
+Fresh-install helper approval and actual package installation remain unverified.
+Local running app has the new colors/section and 0.2.6 metadata; release packaging
+does not replace the local working helper pair or restart that app.
+
+## Chimchar soft red installed — 13 October 2026
+
+User found coral too orange. Reduced green from 0.66 to 0.52, keeping red 0.93
+and blue 0.52: Chimchar is now soft red. Updated detail/README/CHANGELOG.
+Release rebuild and installed executable passed 332 checks, including contrast.
+Installed after user confirmed quit; signatures valid, helper/client unchanged,
+app reopened (PID 95168). Stage:
+.build/interface-updates/chimchar-red-helper-preserved.qj6yfi3p/Inside Battery.app.
+Backup: .build/rollback-backups/interface-install.244fGH/Inside Battery.app.
+Build log: .build/chimchar-red-build.log. No release/commit/push requested.
+
+## Piplup and Chimchar colors installed — 13 October 2026
+
+User requested Piplup slightly darker/bluer and Chimchar slightly darker/redder
+so it is distinct from Low Power yellow. Piplup RGB changes from 0.65/0.89/0.91
+to 0.57/0.82/0.90. Chimchar changes from 0.97/0.78/0.60 to 0.93/0.66/0.52.
+Theme details and README now describe cool blue and coral. Themes section retained.
+Release rebuild passed 332 checks, including percentage contrast in both appearances.
+Actual renderer preview regenerated and inspected: dist/design/themes-preview.png.
+Stage signatures passed:
+.build/interface-updates/piplup-chimchar-helper-preserved.a3w5j9iw/Inside Battery.app.
+Build log: .build/piplup-chimchar-build.log. Installed after user confirmed quit.
+Installer verified original helper/client unchanged; installed executable passed 332
+checks and app restarted (launchctl PID 93860). Backup:
+.build/rollback-backups/interface-install.kJfxSC/Inside Battery.app.
+No new release, commit or push requested for these changes.
+
+## Themes section installed — 13 October 2026
+
+User requested Themes as its own section, like energy data. Added a native separator
+above Themes; existing separator before Quit encloses the Themes submenu row.
+Release rebuild and installed executable passed 332 self-checks. Installer verified
+signatures and original helper/client byte-for-byte unchanged. App quit gracefully
+and reopened after installation. Stage:
+.build/interface-updates/themes-section-helper-preserved.ivag1ev1/Inside Battery.app.
+Backup: .build/rollback-backups/interface-install.JTab9f/Inside Battery.app.
+Build log: .build/themes-section-build.log. Computer Use inspection timed out
+(-10005); live menu click-through was not verified. README/CHANGELOG updated.
+Local bundle now has 0.2.6 metadata. Published 0.2.6 does not include this section.
+
 ## Release 0.2.6 published — 13 October 2026
 
 Published: https://github.com/JonathanLee2020/inside-battery/releases/tag/v0.2.6

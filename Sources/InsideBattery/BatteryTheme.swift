@@ -34,8 +34,8 @@ enum BatteryTheme: String, CaseIterable, Sendable {
         case .joey: "Warm lavender battery fill with a subtle yellow undertone."
         case .turtwig: "Green battery fill in every energy mode."
         case .yoshi: "Automatic green on both power sources, Low Power yellow, High Power light lavender, with green charging symbols."
-        case .piplup: "Sea-glass blue battery fill."
-        case .chimchar: "Warm apricot battery fill."
+        case .piplup: "Cool blue battery fill."
+        case .chimchar: "Soft red battery fill."
         }
     }
 
@@ -52,8 +52,8 @@ enum BatteryTheme: String, CaseIterable, Sendable {
         case .joey: rgb(0.87, 0.76, 0.90)
         case .turtwig: rgb(0.35, 0.95, 0.50)
         case .yoshi: rgb(0.55, 0.87, 0.65)
-        case .piplup: rgb(0.65, 0.89, 0.91)
-        case .chimchar: rgb(0.97, 0.78, 0.60)
+        case .piplup: rgb(0.57, 0.82, 0.90)
+        case .chimchar: rgb(0.93, 0.52, 0.52)
         }
     }
 

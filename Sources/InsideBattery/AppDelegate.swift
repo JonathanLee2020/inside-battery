@@ -111,6 +111,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         estimateItem.state = showTimeUntilFull ? .on : .off
         appMenu.addItem(estimateItem)
 
+        menu.addItem(.separator())
         let themesItem = NSMenuItem(title: "Themes", action: nil, keyEquivalent: "")
         let themesMenu = NSMenu()
         themesMenu.autoenablesItems = false
