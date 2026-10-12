@@ -63,14 +63,14 @@ enum SelfTest {
                let rim = bitmap.colorAt(x: bitmap.pixelsWide / 8, y: bitmap.pixelsHigh / 2)?.usingColorSpace(.sRGB) {
                 checks.append((corner.alphaComponent < 0.1, "selected \(mode.title) icon has transparent corners"))
                 let expectedHue: Bool = switch mode {
-                case .automatic: rim.blueComponent > rim.greenComponent + 0.15 && rim.redComponent > rim.greenComponent + 0.05
-                case .low: rim.redComponent > 0.8 && rim.greenComponent > 0.7 && rim.blueComponent > 0.7 && rim.redComponent > rim.blueComponent + 0.03
+                case .automatic: rim.blueComponent > rim.redComponent + 0.3
+                case .low: rim.redComponent > 0.7 && rim.greenComponent > 0.5 && rim.blueComponent < 0.4
                 case .high: rim.blueComponent - rim.greenComponent > 0.2 && rim.redComponent - rim.greenComponent > 0.1
                 }
-                checks.append((expectedHue, "selected \(mode.title) circle uses its energy-mode color"))
+                checks.append((expectedHue, "selected \(mode.title) circle restores its original energy-mode color"))
                 if mode == .automatic, let center = bitmap.colorAt(x: bitmap.pixelsWide / 2, y: bitmap.pixelsHigh / 2)?.usingColorSpace(.sRGB) {
-                    checks.append((center.redComponent < 0.1 && center.greenComponent < 0.1 && center.blueComponent < 0.1,
-                                   "selected Automatic icon retains a dark battery rather than a tinted square"))
+                    checks.append((center.redComponent > 0.9 && center.greenComponent > 0.9 && center.blueComponent > 0.9,
+                                   "selected Automatic icon retains a white battery rather than a tinted square"))
                 }
             } else { checks.append((false, "selected \(mode.title) icon rasterizes for pixel verification")) }
         }
@@ -170,8 +170,8 @@ enum SelfTest {
         let highLuminance = luminance(highFill)
         let highEmptyLuminance = luminance(BatteryIcon.colors(for: highPower, appearance: appearance).surface)
         checks += [
-            (highFill.blueComponent - highFill.greenComponent >= 0.2 && highFill.redComponent - highFill.greenComponent >= 0.1, "dark High Power fill remains visibly violet"),
-            ((highLuminance + 0.05) / (highEmptyLuminance + 0.05) >= 1.4, "High Power charge fill remains distinct from the empty remainder"),
+            (highFill.blueComponent - highFill.greenComponent >= 0.2 && highFill.redComponent - highFill.greenComponent >= 0.1, "Joey interior remains light violet in High Power"),
+            ((highLuminance + 0.05) / (highEmptyLuminance + 0.05) >= 1.1, "theme charge fill remains distinct from the empty remainder"),
             (highPower.accessibilityLabel.contains("High Power Mode"), "announces High Power to VoiceOver"),
             (!BatteryState(percentage: 52, isCharging: false, isLowPowerMode: true, isHighPowerMode: true).isHighPowerMode, "Low Power takes precedence over stale High Power state"),
             (BatteryIcon.colors(for: highCharging, appearance: appearance).progress == highFill, "High Power retains its purple charge fill while charging"),
@@ -188,8 +188,8 @@ enum SelfTest {
             (PowerModeController.command(for: .automatic, profile: .adapter, unified: true) == "/usr/bin/pmset -c powermode 0", "Automatic command changes only adapter profile"),
             (PowerModeController.command(for: .high, profile: .adapter, unified: true) == "/usr/bin/pmset -c powermode 2", "High Power command uses unified setting"),
             (PowerModeController.command(for: .automatic, profile: .battery, unified: false, highPowerAvailable: false) == "/usr/bin/pmset -b lowpowermode 0", "legacy Automatic avoids unsupported High Power switch"),
-            (BatteryIcon.colors(for: lowPowerBattery, appearance: appearance).progress == BatteryIcon.lowPowerColor, "Low Power uses warm gold-tinted lavender"),
-            (BatteryIcon.colors(for: lowPowerCharging, appearance: appearance).progress == BatteryIcon.lowPowerColor, "Low Power retains warm lavender while charging"),
+            (BatteryIcon.colors(for: lowPowerBattery, appearance: appearance).progress == BatteryIcon.automaticColor, "Low Power keeps the Automatic theme fill"),
+            (BatteryIcon.colors(for: lowPowerCharging, appearance: appearance).progress == BatteryIcon.automaticColor, "Low Power keeps the theme fill while charging"),
             (lowPowerBattery.accessibilityLabel.contains("Low Power Mode"), "announces Low Power Mode to VoiceOver")
         ]
 
@@ -256,6 +256,56 @@ enum SelfTest {
                 checks.append((fillContrast >= 4.5, "number contrast over charge fill >= 4.5:1: \(context) (got \(fillContrast))"))
             }
         }
+
+        // Every selectable palette must retain readable percentages across the
+        // entire progress bar, not just a fully charged battery.
+        for theme in BatteryTheme.allCases {
+            checks.append((theme.swatchImage().tiffRepresentation?.isEmpty == false,
+                           "renders theme swatches: \(theme.title)"))
+            for mode in PowerMode.allCases {
+                let state = BatteryState(percentage: 52, isCharging: true,
+                                         isLowPowerMode: mode == .low, isHighPowerMode: mode == .high)
+                for name in [NSAppearance.Name.aqua, .darkAqua] {
+                    let appearance = NSAppearance(named: name)
+                    let palette = BatteryIcon.colors(for: state, appearance: appearance, theme: theme)
+                    for background in [palette.surface, palette.progress] {
+                        let a = luminance(palette.number), b = luminance(background)
+                        checks.append(((max(a, b) + 0.05) / (min(a, b) + 0.05) >= 4.5,
+                                       "theme number contrast: \(theme.title), \(mode.title), \(name.rawValue)"))
+                    }
+                    checks.append((BatteryIcon.image(for: state, appearance: appearance, theme: theme).tiffRepresentation?.isEmpty == false,
+                                   "theme renders partial charge: \(theme.title), \(mode.title), \(name.rawValue)"))
+                }
+            }
+        }
+        let suite = "InsideBattery.ThemeSelfTest.\(UUID().uuidString)"
+        if let defaults = UserDefaults(suiteName: suite) {
+            checks.append((BatteryTheme.selected(in: defaults) == .joey, "new installation defaults to Joey"))
+            BatteryTheme.yoshi.save(in: defaults)
+            checks.append((BatteryTheme.selected(in: defaults) == .yoshi, "theme selection persists"))
+            defaults.set("unknown-theme", forKey: BatteryTheme.preferenceKey)
+            checks.append((BatteryTheme.selected(in: defaults) == .joey, "unknown saved theme uses default"))
+            defaults.removePersistentDomain(forName: suite)
+        } else { checks.append((false, "creates isolated theme preference test store")) }
+        let gold = BatteryTheme.outline(for: .low)!.usingColorSpace(.sRGB)!
+        checks.append((gold.redComponent > gold.greenComponent && gold.greenComponent > gold.blueComponent
+                       && luminance(gold) < luminance(.systemYellow), "Low Power outline is deeper gold"))
+        checks.append((BatteryTheme.meadow.progress(for: .automatic) != BatteryTheme.meadow.progress(for: .automatic, externalPower: true),
+                       "Meadow restores green only on external power"))
+        checks.append((BatteryTheme.meadow.selection(for: .automatic) == .systemBlue,
+                       "Meadow restores the original blue Automatic circle"))
+
+        for theme in BatteryTheme.allCases {
+            for external in [false, true] {
+                let fill = theme.progress(for: .automatic, externalPower: external)
+                checks.append((theme.progress(for: .low, externalPower: external) == fill
+                               && theme.progress(for: .high, externalPower: external) == fill,
+                               "interior stays constant across modes: \(theme.title), external=\(external)"))
+            }
+        }
+        checks.append((BatteryTheme.outline(for: .automatic) == nil, "Automatic has no outline"))
+        checks.append((BatteryTheme.outline(for: .high) != nil, "High Power has an outline"))
+        checks.append((BatteryTheme.menuIcon().tiffRepresentation?.isEmpty == false, "renders four-color Themes icon"))
 
         for (passed, description) in checks where !passed {
             FileHandle.standardError.write(Data("FAIL: \(description)\n".utf8))

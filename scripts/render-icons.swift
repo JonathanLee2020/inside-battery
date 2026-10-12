@@ -1,6 +1,6 @@
 import AppKit
 
-// Compile alongside BatteryState.swift and BatteryIcon.swift; no GUI session required.
+// Compile alongside BatteryState, BatteryIcon, BatteryTheme and PowerMode; no GUI session required.
 @main
 struct IconPreview {
     static func main() throws {

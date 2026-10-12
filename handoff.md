@@ -2,6 +2,98 @@
 
 Updated: 12 October 2026. There is one app build: `dist/Inside Battery.app`.
 
+## Themes release — 0.2.5
+
+User explicitly requested release publication through Sparkle. Branch release/v0.2.5;
+version 0.2.5/build 7. Includes all previously local theme/menu/outline changes.
+Theme title now 💜 Joey 💜 (saved raw ID remains joey). Yoshi uses yellow progress
+(0.95/0.83/0.42) and light-purple remainder (0.81/0.64/0.91), unchanged across
+energy modes. Menu-bar gold/purple outlines and original Energy Mode circles
+retained. Preferences/Themes top-level arrangement is included in the download.
+
+291 executable checks passed before/after archive extraction, nested signatures,
+helper pinning and signed feed/archive preparation passed. Public helper, client
+and pinned hash compared byte-for-byte against 0.2.4 ZIP: all identical, ensuring
+compatibility with the registered public helper pair.
+Archive: dist/releases/v0.2.5/InsideBattery-0.2.5-arm64.zip.
+SHA256: a805d49b5f01792ca9651f62110aea7f470cc401712dc8f9fa885aba32d6e19c.
+Build log: .build/release-0.2.5-verification.log.
+Local preserved-helper stage passed 291 checks and signatures:
+.build/interface-updates/v0.2.5-helper-preserved.x4p3fop8/Inside Battery.app.
+Asked user to quit before installing. Public app and local retained helper pairs
+still differ; no service registration will be changed for the local update.
+
+## Restored Energy Mode icons and deeper outlines — 12 October 2026
+
+User clarified that Energy Mode menu icons should retain their original colors
+and uniform thin outlines. Restored fixed blue Automatic, system yellow Low and
+light lavender High selected circles, white Automatic/dark Low/High symbols,
+1pt native-style battery outlines, short Low fill and High fast-forward triangles.
+This styling is independent of the selected theme. Menu-bar fill remains shared
+across energy modes. Low outline is now deeper gold (0.78/0.57/0.08), High keeps
+dark purple; both menu-bar outlines are 1.75pt (previously 1.25pt). Automatic
+menu-bar has no outline. Preferences/Themes layout and saved themes retained.
+
+291 checks and nested signatures passed, including restored rasterized circles,
+percentage contrast and deeper-gold check. Preview regenerated in both appearances.
+Prepared stage retains original helper/client:
+.build/interface-updates/gold-outline-helper-preserved.dw_nosmh/Inside Battery.app.
+Installed after user confirmed quit; app reopened and installed executable passed
+291 checks. Original helper/client unchanged. Backup:
+.build/rollback-backups/interface-install.dRDxBp/Inside Battery.app.
+Build log: .build/gold-outline-build.log.
+No release, commit or push requested.
+
+## Installed menu and outline update — 12 October 2026
+
+User moved Themes out of the app submenu: renamed Inside Battery to Preferences;
+Themes is now the next top-level row, with an original 18pt four-color grid icon.
+Energy mode affects only the outline: Automatic none, Low yellow, High dark
+purple. Selected theme controls one common fill/remainder/text across modes.
+Menu mode icons also share their interior/circle color and differ by outlines;
+removed High arrows and Low short-fill glyphs to satisfy border-only styling.
+Meadow retains original grey/adapter-green fill but uses the shared mode outlines.
+Five saved theme names remain unchanged. No version publication requested.
+
+First executable check failed on the outdated expectation that selected Low
+Power had a separate warm circle color. Updated that expectation to the shared
+Joey circle and verified all 291 checks. Added invariants for shared theme fill
+on both power sources, outline presence and four-color icon rendering.
+Rendering preview confirmed identical interiors with mode outlines in light/dark.
+Build, signature and preserved-helper stage passed:
+.build/interface-updates/theme-outlines-helper-preserved.y2v9qa9b/Inside Battery.app.
+Installed after user quit; app reopened, original helper/client unchanged and
+installed self-checks passed 291. Backup:
+.build/rollback-backups/interface-install.aA9u2s/Inside Battery.app.
+Build log: .build/themes-outline-build.log. No live UI automation was repeated
+because the preceding Computer Use app inspection had timed out.
+
+## Themes installed — 12 October 2026
+
+User requested saved themes with swatch rows resembling the supplied screenshot.
+BatteryTheme defines five presets: Joey 💜 (default, current 0.2.4 purple colors),
+Meadow (pre-purple grey/AC green + yellow Low + light violet High and blue
+Automatic selection), Yoshi (mint/lime/forest), Tidepool (sea glass/sand/teal),
+Ember (apricot/cream/terracotta). Six swatches show battery Automatic, adapter
+Automatic, Low, High, empty remainder and digits; some palettes repeat colors.
+AppDelegate has Inside Battery > Themes, native checked rows and swatch images.
+Selection is stored in UserDefaults batteryTheme and refreshes status/menu icons.
+BatteryIcon and BatteryMenu accept an explicit theme; tests default to Joey so
+actual saved user preferences do not change verification results. App icon stays
+purple-and-green. No new release, commit or push requested for themes yet.
+
+278 executable checks passed: existing regressions plus theme persistence in an
+isolated preference suite, classic restoration, rendering and >=4.5:1 percentage
+contrast over filled/empty areas for all five themes in both appearances.
+Build/signature checks passed. Preserved-helper stage:
+.build/interface-updates/themes-helper-preserved.ugcgciej/Inside Battery.app.
+Installed after user confirmed quit. Original client/helper retained byte-for-byte,
+app reopened; installed executable passed all 278 checks. Backup:
+.build/rollback-backups/interface-install.8DhHeO/Inside Battery.app.
+Native Computer Use inspection timed out (-10005), so no live menu click-through
+is claimed. Source rendering and isolated saved-selection checks passed.
+Preview: dist/design/themes-preview.png. Build log: .build/themes-build.log.
+
 ## Published color and app-icon release — 0.2.4
 
 User requested publication with Sparkle notification for existing downloads.

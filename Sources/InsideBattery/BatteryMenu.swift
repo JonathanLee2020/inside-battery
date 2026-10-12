@@ -43,23 +43,19 @@ enum BatteryMenu {
         return view
     }
 
-    static func selectionColor(for mode: PowerMode) -> NSColor {
-        switch mode {
-        case .automatic: BatteryIcon.automaticColor
-        case .low: BatteryIcon.lowPowerColor
-        case .high: BatteryIcon.highPowerColor
-        }
+    static func selectionColor(for mode: PowerMode, theme: BatteryTheme = .joey) -> NSColor {
+        theme.selection(for: mode)
     }
 
-    static func modeImage(_ mode: PowerMode, selected: Bool, appearance: NSAppearance? = nil) -> NSImage {
+    static func modeImage(_ mode: PowerMode, selected: Bool, appearance: NSAppearance? = nil, theme: BatteryTheme = .joey) -> NSImage {
         let ink: NSColor = appearance?.bestMatch(from: [.aqua, .darkAqua]) == .darkAqua ? .white : .black
-        let selectionColor = selectionColor(for: mode)
+        let selectionColor = selectionColor(for: mode, theme: theme)
         let image = NSImage(size: NSSize(width: 28, height: 28), flipped: false) { bounds in
             (selected ? selectionColor : ink.withAlphaComponent(0.25)).setFill()
             NSBezierPath(ovalIn: bounds.insetBy(dx: 1, dy: 1)).fill()
-            let color = selected ? (mode == .high ? NSColor.white : .black) : ink
+            let color = selected ? theme.symbol(for: mode) : ink
             let outlineColor = selected
-                ? (mode == .high ? NSColor(srgbRed: 0.90, green: 0.85, blue: 0.96, alpha: 1)
+                ? (mode == .automatic ? NSColor(srgbRed: 0.80, green: 0.88, blue: 0.94, alpha: 1)
                    : NSColor.black.withAlphaComponent(0.65))
                 : NSColor(srgbRed: 0.60, green: 0.60, blue: 0.62, alpha: 1)
             outlineColor.setStroke()
@@ -73,8 +69,7 @@ enum BatteryMenu {
             if mode == .high {
                 let arrowWidth: CGFloat = 3
                 let spacing: CGFloat = 1
-                let groupWidth = 3 * arrowWidth + 2 * spacing
-                let startX = body.midX - groupWidth / 2
+                let startX = body.midX - (3 * arrowWidth + 2 * spacing) / 2
                 for index in 0..<3 {
                     let x = startX + CGFloat(index) * (arrowWidth + spacing)
                     let arrow = NSBezierPath()
@@ -88,6 +83,7 @@ enum BatteryMenu {
                 let fill = NSRect(x: 7, y: 12, width: mode == .low ? 3 : 13, height: 4)
                 NSBezierPath(roundedRect: fill, xRadius: 1, yRadius: 1).fill()
             }
+
             return true
         }
         image.isTemplate = false

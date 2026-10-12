@@ -4,6 +4,26 @@ Versions preserve source snapshots and, from 0.2.0, prepared downloadable previe
 
 ## Unreleased
 
+## 0.2.5 — 2026-10-12 (development preview)
+
+- Saved Themes submenu with native color-swatch rows: 💜 Joey 💜, Meadow (the
+  previous palette), Yoshi, Tidepool and Ember.
+- Preferences replaces the Inside Battery submenu. Themes is a separate row
+  immediately below it, with a four-color grid icon.
+- Battery interiors stay identical across energy modes. Automatic has no
+  outline, Low Power has a deeper gold outline, High Power has a dark purple
+  outline. Both colored menu-bar outlines are thicker. Theme changes update the
+  shared fill; the app icon remains purple and green.
+- Energy Mode menu icons retain their original blue/yellow/lavender circles,
+  thin native-style battery outlines and original mode glyphs.
+- Yoshi now uses sunshine yellow for charge and lavender for its empty portion.
+- 291 checks cover saved selections, original grey/charging green, rendering and
+  percentage contrast across every theme.
+
+Verification: 291 checks, nested signatures, ZIP round-trip and signed feed/archive
+passed. Public helper/client are byte-for-byte unchanged from 0.2.4, preserving
+Sparkle compatibility. Fresh public installation remains unverified.
+
 ## 0.2.4 — 2026-10-12 (development preview)
 
 - Purple app-icon tile with a green battery fill, bundled at every macOS size.

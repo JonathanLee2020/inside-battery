@@ -2,26 +2,21 @@ import AppKit
 
 enum BatteryIcon {
     static let size = NSSize(width: 35, height: 18)
-    static let automaticColor = NSColor(srgbRed: 0.85, green: 0.74, blue: 0.95, alpha: 1)
-    static let lowPowerColor = NSColor(srgbRed: 0.87, green: 0.81, blue: 0.80, alpha: 1)
-    static let highPowerColor = NSColor(srgbRed: 0.48, green: 0.24, blue: 0.69, alpha: 1)
+    static let automaticColor = BatteryTheme.joey.progress(for: .automatic)
 
-    // Dark High Power uses white numerals on both the fill and empty remainder.
-    static func colors(for state: BatteryState, appearance: NSAppearance?) -> (surface: NSColor, number: NSColor, progress: NSColor) {
-        let high = state.isHighPowerMode && state.isPresent
-        let surface = high
-            ? NSColor(srgbRed: 0.20, green: 0.18, blue: 0.23, alpha: 1)
-            : NSColor(srgbRed: 0.72, green: 0.72, blue: 0.72, alpha: 1)
-        let progress = state.isLowPowerMode && state.isPresent ? lowPowerColor
-            : high ? highPowerColor : automaticColor
-        return (surface, high ? .white : .black, progress)
+    // The theme controls the interior; only the outline indicates energy mode.
+    static func colors(for state: BatteryState, appearance: NSAppearance?, theme: BatteryTheme = .joey) -> (surface: NSColor, number: NSColor, progress: NSColor) {
+        let mode: PowerMode = state.isLowPowerMode && state.isPresent ? .low
+            : state.isHighPowerMode && state.isPresent ? .high : .automatic
+        return (theme.surface(for: mode), theme.number(for: mode),
+                theme.progress(for: mode, externalPower: state.isExternalPowerConnected && state.isPresent))
     }
 
-    static func image(for state: BatteryState, appearance: NSAppearance?) -> NSImage {
+    static func image(for state: BatteryState, appearance: NSAppearance?, theme: BatteryTheme = .joey) -> NSImage {
         let imageSize = NSSize(width: state.isExternalPowerConnected && state.isPresent ? size.width : 30,
                                height: size.height)
         let image = NSImage(size: imageSize, flipped: false) { bounds in
-            draw(state: state, in: bounds, appearance: appearance)
+            draw(state: state, in: bounds, appearance: appearance, theme: theme)
             return true
         }
         image.isTemplate = false
@@ -29,8 +24,8 @@ enum BatteryIcon {
         return image
     }
 
-    private static func draw(state: BatteryState, in bounds: NSRect, appearance: NSAppearance?) {
-        let palette = colors(for: state, appearance: appearance)
+    private static func draw(state: BatteryState, in bounds: NSRect, appearance: NSAppearance?, theme: BatteryTheme) {
+        let palette = colors(for: state, appearance: appearance, theme: theme)
         let body = NSRect(x: 1, y: 2, width: 25, height: 14)
         let bodyPath = NSBezierPath(roundedRect: body, xRadius: 3.5, yRadius: 3.5)
         palette.surface.setFill()
@@ -44,12 +39,13 @@ enum BatteryIcon {
             NSGraphicsContext.restoreGraphicsState()
         }
 
-        // Keep the silhouette visible against a light menu bar, including at 100%.
-        (state.isHighPowerMode && state.isPresent
-            ? highPowerColor
-            : NSColor.black.withAlphaComponent(0.35)).setStroke()
-        bodyPath.lineWidth = state.isHighPowerMode && state.isPresent ? 1.5 : 0.75
-        bodyPath.stroke()
+        let mode: PowerMode = state.isLowPowerMode && state.isPresent ? .low
+            : state.isHighPowerMode && state.isPresent ? .high : .automatic
+        if let outline = BatteryTheme.outline(for: mode) {
+            outline.setStroke()
+            bodyPath.lineWidth = 1.75
+            bodyPath.stroke()
+        }
 
         palette.surface.setFill()
         NSBezierPath(roundedRect: NSRect(x: 27, y: 6.5, width: 1.5, height: 5), xRadius: 0.75, yRadius: 0.75).fill()

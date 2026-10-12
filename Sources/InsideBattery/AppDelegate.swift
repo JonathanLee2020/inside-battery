@@ -14,6 +14,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private let powerHelper = SMAppService.daemon(plistName: PowerHelperIdentity.plist)
     private let appUpdater = AppUpdater()
     private var checkUpdatesItem: NSMenuItem?
+    private var themeItems: [BatteryTheme: NSMenuItem] = [:]
     private var helperItem: NSMenuItem?
     private var activeMode: PowerMode?
     private var modeProfile: PowerProfile?
@@ -72,7 +73,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             let item = NSMenuItem(title: mode.title, action: #selector(selectPowerMode(_:)), keyEquivalent: "")
             item.target = self
             item.tag = mode.rawValue
-            item.image = BatteryMenu.modeImage(mode, selected: false, appearance: statusItem.button?.effectiveAppearance)
+            item.image = BatteryMenu.modeImage(mode, selected: false, appearance: statusItem.button?.effectiveAppearance, theme: BatteryTheme.current)
             item.view = EnergyModeRow(item: item)
             if mode == .high { item.toolTip = "Available on Macs that support High Power Mode." }
             modeItems[mode] = item
@@ -96,7 +97,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         menu.addItem(settingsItem)
 
         let appMenu = NSMenu()
-        let appItem = NSMenuItem(title: "Inside Battery", action: nil, keyEquivalent: "")
+        let appItem = NSMenuItem(title: "Preferences", action: nil, keyEquivalent: "")
         appItem.submenu = appMenu
         menu.addItem(appItem)
 
@@ -109,6 +110,23 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         estimateItem.target = self
         estimateItem.state = showTimeUntilFull ? .on : .off
         appMenu.addItem(estimateItem)
+
+        let themesItem = NSMenuItem(title: "Themes", action: nil, keyEquivalent: "")
+        let themesMenu = NSMenu()
+        themesMenu.autoenablesItems = false
+        for theme in BatteryTheme.allCases {
+            let item = NSMenuItem(title: theme.title, action: #selector(selectTheme(_:)), keyEquivalent: "")
+            item.target = self
+            item.representedObject = theme.rawValue
+            item.image = theme.swatchImage()
+            item.toolTip = theme.detail
+            item.state = theme == BatteryTheme.current ? .on : .off
+            themeItems[theme] = item
+            themesMenu.addItem(item)
+        }
+        themesItem.submenu = themesMenu
+        themesItem.image = BatteryTheme.menuIcon()
+        menu.addItem(themesItem)
 
         let updatesItem = NSMenuItem(title: "Check for Updates…", action: nil, keyEquivalent: "")
         updatesItem.isEnabled = false
@@ -150,12 +168,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private func display(_ state: BatteryState) {
         currentState = state
         let appearance = statusItem.button?.effectiveAppearance ?? NSApp.effectiveAppearance
-        statusItem.button?.image = BatteryIcon.image(for: state, appearance: appearance)
+        statusItem.button?.image = BatteryIcon.image(for: state, appearance: appearance, theme: BatteryTheme.current)
         statusItem.button?.setAccessibilityLabel(state.accessibilityLabel)
         batteryItem?.title = state.accessibilityLabel
         batteryItem?.view = BatteryMenu.header(for: state, showTimeUntilFull: showTimeUntilFull)
         for (mode, item) in modeItems {
-            item.image = BatteryMenu.modeImage(mode, selected: activeMode == mode, appearance: appearance)
+            item.image = BatteryMenu.modeImage(mode, selected: activeMode == mode, appearance: appearance, theme: BatteryTheme.current)
             item.setAccessibilityValue(activeMode == mode ? "Selected" : "Not selected")
             (item.view as? EnergyModeRow)?.refresh()
         }
@@ -165,6 +183,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         let enabled = !showTimeUntilFull
         UserDefaults.standard.set(enabled, forKey: showTimeUntilFullKey)
         sender.state = enabled ? .on : .off
+        display(currentState)
+    }
+
+    @objc private func selectTheme(_ sender: NSMenuItem) {
+        guard let value = sender.representedObject as? String,
+              let theme = BatteryTheme(rawValue: value) else { return }
+        theme.save()
+        for (candidate, item) in themeItems { item.state = candidate == theme ? .on : .off }
         display(currentState)
     }
 
@@ -193,7 +219,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             display(currentState.withHighPowerMode(selected == .high))
             for (mode, item) in modeItems {
                 item.state = .off
-                item.image = BatteryMenu.modeImage(mode, selected: selected == mode, appearance: statusItem.button?.effectiveAppearance)
+                item.image = BatteryMenu.modeImage(mode, selected: selected == mode, appearance: statusItem.button?.effectiveAppearance, theme: BatteryTheme.current)
                 item.setAccessibilityValue(selected == mode ? "Selected" : "Not selected")
                 // Keep rows visually stable during a mode change. The action's
                 // changingMode guard serializes requests without dimming them.
@@ -203,7 +229,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             }
         } catch {
             modeHeading?.toolTip = error.localizedDescription
-            for (mode, item) in modeItems { item.isEnabled = false; item.state = .off; item.image = BatteryMenu.modeImage(mode, selected: false, appearance: statusItem.button?.effectiveAppearance); item.setAccessibilityValue("Unavailable") }
+            for (mode, item) in modeItems { item.isEnabled = false; item.state = .off; item.image = BatteryMenu.modeImage(mode, selected: false, appearance: statusItem.button?.effectiveAppearance, theme: BatteryTheme.current); item.setAccessibilityValue("Unavailable") }
             for item in modeItems.values { (item.view as? EnergyModeRow)?.refresh() }
         }
     }
