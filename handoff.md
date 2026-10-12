@@ -2,7 +2,14 @@
 
 Updated: 13 October 2026. There is one app build: `dist/Inside Battery.app`.
 
-## Release 0.2.8 prepared — 13 October 2026
+## Release 0.2.8 published — 13 October 2026
+
+Published: https://github.com/JonathanLee2020/inside-battery/releases/tag/v0.2.8
+Source commit c5759f9; tap commit 803e3e8. Release branch pushed; non-main tap
+tracking branch fast-forwarded. All five assets published; signed update-feed
+reports 0.2.8. Downloaded public ZIP matches manifest checksum; public feed bytes
+match the verified signed feed. Real local 0.2.8 SPUUpdater received and parsed
+the signed feed; no installation attempted during this diagnostic.
 
 User requested Test Joey after all existing themes, then a new release. Test Joey
 uses the current Joey purple fills (0.80/0.62/0.86 Automatic/Low, 0.78/0.60/0.84
