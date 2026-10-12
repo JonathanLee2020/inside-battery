@@ -2,7 +2,14 @@
 
 Updated: 13 October 2026. There is one app build: `dist/Inside Battery.app`.
 
-## Release 0.2.6 prepared — 13 October 2026
+## Release 0.2.6 published — 13 October 2026
+
+Published: https://github.com/JonathanLee2020/inside-battery/releases/tag/v0.2.6
+Source commit c07cc86; tap commit 4c94cba. Release branch pushed; non-main tap
+tracking branch fast-forwarded. All five assets published; signed update-feed
+now reports 0.2.6. Downloaded public ZIP matches the manifest SHA-256, and public
+feed bytes match the verified signed feed. Real local 0.2.5 SPUUpdater received
+and parsed 0.2.6; no installation attempted by the diagnostic.
 
 User requested a new release of the current verified changes. Branch release/v0.2.6;
 version 0.2.6/build 8. Includes renamed themes with stable saved IDs, warmer Joey,
