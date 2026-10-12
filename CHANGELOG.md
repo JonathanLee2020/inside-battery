@@ -4,6 +4,11 @@ Versions preserve source snapshots and, from 0.2.0, prepared downloadable previe
 
 ## Unreleased
 
+## 0.2.9 — 2026-10-13 (development preview)
+
+- Test Joey Automatic now uses the same darker grey border color as Yoshi
+  and the other themes, retaining its 1.75pt width.
+
 ## 0.2.8 — 2026-10-13 (development preview)
 
 - Added Test Joey as the final theme, with Joey purple fills and a darker grey

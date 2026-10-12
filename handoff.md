@@ -2,6 +2,38 @@
 
 Updated: 13 October 2026. There is one app build: `dist/Inside Battery.app`.
 
+## Release 0.2.9 prepared — 13 October 2026
+
+User requested release of Test Joey's shared darker grey Automatic border.
+Branch release/v0.2.9; version 0.2.9/build 11. Test Joey uses the same black-at-35%
+Automatic outline as Yoshi and the other themes, with its existing 1.75pt width.
+Release notes: packaging/releases/v0.2.9.md. Unrelated untracked
+assets/piplup-sprite.gif remains excluded from the release commit.
+
+365 checks passed before/after ZIP extraction. Bundle signatures, helper/client
+pinning, signed archive/feed, and ZIP round-trip passed. Public helper/client and
+pinned hash are byte-identical to 0.2.8.
+Archive: dist/releases/v0.2.9/InsideBattery-0.2.9-arm64.zip.
+SHA256: c9cb1602b5bd19f20e004fb89c7f4004fc042fbd93c4cc22f8a7a073ba4941e2.
+Build log: .build/release-0.2.9-verification.log.
+Local running app already has the darker border, retaining 0.2.8 bundle metadata
+and original working helper pair. Release packaging does not replace that app.
+Fresh-install helper approval and actual package installation remain unverified.
+
+## Test Joey shared darker grey border installed — 13 October 2026
+
+User clarified Test Joey should use Yoshi/other themes' darker Automatic border.
+Replaced explicit light grey RGB 0.61/0.61/0.63 with the shared outline(for: .automatic)
+color (black at 35% opacity); retained 1.75pt width. Fill and Low/High unchanged.
+Release build passed 365 checks; renderer preview regenerated/inspected.
+Stage signatures valid:
+.build/interface-updates/test-joey-dark-border-helper-preserved.13zjoixs/Inside Battery.app.
+Build log: .build/test-joey-dark-border-build.log. Installed after user confirmed quit.
+Installer preserved original helper/client; signatures and 365 installed checks
+passed. App restarted (PID 5149). Backup:
+.build/rollback-backups/interface-install.C8sVCt/Inside Battery.app.
+No new release/commit/push requested.
+
 ## Release 0.2.8 published — 13 October 2026
 
 Published: https://github.com/JonathanLee2020/inside-battery/releases/tag/v0.2.8

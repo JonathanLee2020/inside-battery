@@ -79,7 +79,7 @@ enum BatteryTheme: String, CaseIterable, Sendable {
 
     func border(for mode: PowerMode, externalPower: Bool) -> (color: NSColor, width: CGFloat)? {
         if self == .joey && mode == .automatic { return (progress(for: mode, externalPower: externalPower), 1.75) }
-        if self == .testJoey && mode == .automatic { return (rgb(0.61, 0.61, 0.63), 1.75) }
+        if self == .testJoey && mode == .automatic, let color = Self.outline(for: mode) { return (color, 1.75) }
         if let color = Self.outline(for: mode) { return (color, 2.0) }
         return nil
     }
