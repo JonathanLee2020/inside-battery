@@ -32,7 +32,7 @@ feed. It refuses to overwrite existing staging files. It never publishes.
 An empty signed bootstrap feed can be prepared by omitting archive and notes.
 
 The configured HTTPS endpoint is the `appcast.xml` asset of a dedicated
-`update-feed` GitHub release. It is live for 0.2.3. The release publisher
+`update-feed` GitHub release. It is live for 0.2.4. The release publisher
 uploads the signed feed snapshot alongside the versioned ZIP, then creates or
 updates that dedicated feed release. Keep versioned archives immutable.
 
@@ -52,7 +52,7 @@ Build, executable checks, nested signatures and feed signing are verified.
 A disposable app without a power helper passed replacement and automatic relaunch
 through the standard Sparkle dialog after the user clicked Install and Relaunch.
 Real Sparkle downloaded and parsed the public HTTPS feed. Public archive checksum
-and Ed25519 signatures matched; Homebrew fetch and install dry run of 0.2.3 passed.
+and Ed25519 signatures matched; Homebrew fetch and install dry run of 0.2.4 passed.
 Privileged-helper upgrades remain unverified and require manual installation.
 Users on 0.2.1 need one manual/Homebrew upgrade to the first updater-enabled release.
 
@@ -63,3 +63,10 @@ After the 0.2.3 publication, direct HTTPS checks received and verified the signe
 0.2.3 feed/archive. The standard Sparkle diagnostic initially received an older
 0.2.2 feed, then received and parsed 0.2.3 on a later check without any settings
 or cache changes. Installation of this release through Sparkle was not attempted.
+
+Version 0.2.4 retains the public helper hash from 0.2.3. Public archive/feed
+signatures verified, and a real 0.2.3 SPUUpdater downloaded and parsed the signed
+0.2.4 feed. Existing compatible copies can receive it through their next automatic
+check or Check for Updates. The 0.2.4 archive was not installed through Sparkle
+in this check; the standard install/relaunch flow was previously verified in the
+disposable fixture. Older pre-Sparkle versions need one manual upgrade.

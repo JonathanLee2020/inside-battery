@@ -265,6 +265,14 @@ a separate source-matched app/client/helper set in `.build/release-staging`,
 tests it, and archives it under `dist/releases/v0.2.4`. Checksum-pinned recipes
 are generated from those exact bytes. The release helper pair differs from the
 development Mac's preserved original pair and needs desktop install testing.
+The 0.2.4 release passed 177 checks, including number contrast, selected-circle
+rendering and ZIP round-trip. Public archive checksum/signatures and the signed
+feed verified. A real 0.2.3 Sparkle diagnostic received and parsed the 0.2.4 feed;
+the published helper hash is unchanged, so the compatibility guard permits the
+update for that public helper pair. Homebrew fetch/dry run passed, and the local
+MacPorts recipe passed lint. Compatible installations with automatic checks
+enabled are offered the release on their next check; this is not a push notification.
+
 The 0.2.3 release passed 177 executable self-checks, nested signatures, helper
 signature pinning, ZIP extraction and public archive/feed signature verification.
 Homebrew fetch and install dry run of 0.2.3 passed. The local MacPorts recipe
@@ -281,7 +289,7 @@ package-manager installation and first launch remain unverified.
 
 Developer ID signing, notarization, fresh-install/restart verification and
 package-manager install tests remain required before calling a release stable.
-The development Mac now runs 0.2.3 with Sparkle while retaining its original
+The development Mac now runs 0.2.4 with Sparkle while retaining its original
 working helper/client pair. Installation verified both files unchanged; a request
 to reapply the current mode completed with saved power preferences unchanged.
 That preserved pair differs from the public archive, so its helper compatibility

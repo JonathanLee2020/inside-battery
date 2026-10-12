@@ -2,9 +2,15 @@
 
 Updated: 12 October 2026. There is one app build: `dist/Inside Battery.app`.
 
-## Color and app-icon release — 0.2.4
+## Published color and app-icon release — 0.2.4
 
 User requested publication with Sparkle notification for existing downloads.
+Published: https://github.com/JonathanLee2020/inside-battery/releases/tag/v0.2.4
+Source commit b3009a9; tap commit 776a67a. Branch-only app push and non-main tap
+fast-forward. Public ZIP checksum and Ed25519 signature verified; signed feed
+reports 0.2.4. A real 0.2.3 Sparkle probe received and parsed signed 0.2.4.
+Homebrew fetch/dry run passed for 0.2.4, MacPorts lint 0 errors/0 warnings
+(installed definitions are old). No actual package-manager install performed.
 Branch release/v0.2.4; version 0.2.4/build 6. App icon now uses the approved B
 palette (purple tile, green battery). Mode palette: Automatic light purple
 (0.85/0.74/0.95), Low Power user-approved warm lavender with gold tint
@@ -21,7 +27,11 @@ Older versions without Sparkle still need a manual upgrade.
 
 Local stage retains original helper/client and passed 177 checks, signatures and
 updater startup: .build/interface-updates/v0.2.4-helper-preserved.id3g75c5/Inside Battery.app.
-Asked user to quit before installation. No helper registration will be changed.
+After user confirmed quit, installed and reopened the local 0.2.4 app.
+Original helper/client unchanged; installed self-checks passed 177. Same-mode
+request completed through original helper, with full saved preferences unchanged.
+Backup: .build/rollback-backups/interface-install.llfylV/Inside Battery.app.
+No helper registration or root service replacement performed.
 Preview: dist/design/0.2.4-mode-colors.png; renderer sources retained locally.
 Build verification: .build/release-0.2.4-verification.log.
 
