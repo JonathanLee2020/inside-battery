@@ -2,8 +2,14 @@
 
 Updated: 12 October 2026. There is one app build: `dist/Inside Battery.app`.
 
-## Themes release — 0.2.5
+## Published themes release — 0.2.5
 
+Published: https://github.com/JonathanLee2020/inside-battery/releases/tag/v0.2.5
+Source commit 05f273a; tap commit 226e7cb. App release branch pushed; non-main tap
+default branch fast-forwarded. All five assets uploaded; signed update-feed
+updated to 0.2.5. Public ZIP checksum and signatures verified. Real 0.2.4 Sparkle
+probe received/parsed 0.2.5; no installation attempted during the probe.
+Homebrew fetch/dry run passed; MacPorts lint 0 errors/0 warnings (definitions old).
 User explicitly requested release publication through Sparkle. Branch release/v0.2.5;
 version 0.2.5/build 7. Includes all previously local theme/menu/outline changes.
 Theme title now 💜 Joey 💜 (saved raw ID remains joey). Yoshi uses yellow progress

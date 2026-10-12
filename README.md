@@ -275,6 +275,12 @@ a separate source-matched app/client/helper set in `.build/release-staging`,
 tests it, and archives it under `dist/releases/v0.2.5`. Checksum-pinned recipes
 are generated from those exact bytes. The release helper pair differs from the
 development Mac's preserved original pair and needs desktop install testing.
+The 0.2.5 release passed 291 checks, including saved themes, number contrast,
+original Energy Mode icon colors and ZIP round-trip. The public helper/client
+are byte-for-byte identical to 0.2.4, preserving Sparkle compatibility. Public
+ZIP checksum/signatures and signed feed verified; a real 0.2.4 SPUUpdater
+received and parsed 0.2.5. Homebrew fetch/dry run and MacPorts lint passed.
+
 The 0.2.4 release passed 177 checks, including number contrast, selected-circle
 rendering and ZIP round-trip. Public archive checksum/signatures and the signed
 feed verified. A real 0.2.3 Sparkle diagnostic received and parsed the 0.2.4 feed;
