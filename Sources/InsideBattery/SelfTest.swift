@@ -170,7 +170,7 @@ enum SelfTest {
         let highLuminance = luminance(highFill)
         let highEmptyLuminance = luminance(BatteryIcon.colors(for: highPower, appearance: appearance).surface)
         checks += [
-            (highFill.blueComponent - highFill.greenComponent >= 0.2 && highFill.redComponent - highFill.greenComponent >= 0.1, "Joey interior remains light violet in High Power"),
+            (highFill.blueComponent - highFill.greenComponent >= 0.12 && highFill.redComponent - highFill.greenComponent >= 0.1, "Joey interior remains warm lavender in High Power"),
             ((highLuminance + 0.05) / (highEmptyLuminance + 0.05) >= 1.1, "theme charge fill remains distinct from the empty remainder"),
             (highPower.accessibilityLabel.contains("High Power Mode"), "announces High Power to VoiceOver"),
             (!BatteryState(percentage: 52, isCharging: false, isLowPowerMode: true, isHighPowerMode: true).isHighPowerMode, "Low Power takes precedence over stale High Power state"),
@@ -283,6 +283,10 @@ enum SelfTest {
             checks.append((BatteryTheme.selected(in: defaults) == .joey, "new installation defaults to Joey"))
             BatteryTheme.yoshi.save(in: defaults)
             checks.append((BatteryTheme.selected(in: defaults) == .yoshi, "theme selection persists"))
+            for (savedID, theme) in [("meadow", BatteryTheme.turtwig), ("tidepool", .piplup), ("ember", .chimchar)] {
+                defaults.set(savedID, forKey: BatteryTheme.preferenceKey)
+                checks.append((BatteryTheme.selected(in: defaults) == theme, "renamed theme preserves saved selection: \(savedID)"))
+            }
             defaults.set("unknown-theme", forKey: BatteryTheme.preferenceKey)
             checks.append((BatteryTheme.selected(in: defaults) == .joey, "unknown saved theme uses default"))
             defaults.removePersistentDomain(forName: suite)
@@ -290,22 +294,56 @@ enum SelfTest {
         let gold = BatteryTheme.outline(for: .low)!.usingColorSpace(.sRGB)!
         checks.append((gold.redComponent > gold.greenComponent && gold.greenComponent > gold.blueComponent
                        && luminance(gold) < luminance(.systemYellow), "Low Power outline is deeper gold"))
-        checks.append((BatteryTheme.meadow.progress(for: .automatic) != BatteryTheme.meadow.progress(for: .automatic, externalPower: true),
-                       "Meadow restores green only on external power"))
-        checks.append((BatteryTheme.meadow.selection(for: .automatic) == .systemBlue,
-                       "Meadow restores the original blue Automatic circle"))
+        checks.append((BatteryTheme.turtwig.progress(for: .automatic) == BatteryTheme.turtwig.progress(for: .automatic, externalPower: true),
+                       "turtwig keeps green on both power sources"))
+        checks.append((BatteryTheme.turtwig.selection(for: .automatic) == .systemBlue,
+                       "turtwig restores the original blue Automatic circle"))
 
         for theme in BatteryTheme.allCases {
             for external in [false, true] {
                 let fill = theme.progress(for: .automatic, externalPower: external)
-                checks.append((theme.progress(for: .low, externalPower: external) == fill
-                               && theme.progress(for: .high, externalPower: external) == fill,
-                               "interior stays constant across modes: \(theme.title), external=\(external)"))
+                if theme == .yoshi {
+                    for mode in [PowerMode.low, .high] {
+                        let fill = theme.progress(for: mode, externalPower: external)
+                        let matches = mode == .low ? fill == theme.selection(for: mode)
+                            : luminance(fill) < luminance(theme.selection(for: mode))
+                                && luminance(fill) > luminance(theme.selection(for: mode)) * 0.75
+                        checks.append((matches, "Yoshi bright mode fill: \(mode.title), external=\(external)"))
+                    }
+                } else {
+                    checks.append((theme.progress(for: .low, externalPower: external) == fill
+                                   && theme.progress(for: .high, externalPower: external) == fill,
+                                   "interior stays constant across modes: \(theme.title), external=\(external)"))
+                }
             }
         }
-        checks.append((BatteryTheme.outline(for: .automatic) == nil, "Automatic has no outline"))
+        checks.append((BatteryTheme.outline(for: .automatic) != nil, "Automatic has a neutral outline"))
         checks.append((BatteryTheme.outline(for: .high) != nil, "High Power has an outline"))
         checks.append((BatteryTheme.menuIcon().tiffRepresentation?.isEmpty == false, "renders four-color Themes icon"))
+
+        let yoshiBattery = BatteryTheme.yoshi.progress(for: .automatic).usingColorSpace(.sRGB)!
+        let yoshiAdapter = BatteryTheme.yoshi.progress(for: .automatic, externalPower: true).usingColorSpace(.sRGB)!
+        checks.append((yoshiBattery.greenComponent > yoshiBattery.redComponent && yoshiBattery.greenComponent > yoshiBattery.blueComponent,
+                       "Yoshi is green on battery power"))
+        checks.append((yoshiAdapter.greenComponent > yoshiAdapter.redComponent && yoshiAdapter.greenComponent > yoshiAdapter.blueComponent,
+                       "Yoshi Automatic is green on external power"))
+        for theme in BatteryTheme.allCases {
+            for mode in PowerMode.allCases {
+                for external in [false, true] {
+                    checks.append((theme.border(for: mode, externalPower: external)?.width == 2,
+                                   "uniform 2pt border: \(theme.title), \(mode.title), external=\(external)"))
+                }
+            }
+        }
+        for dark in [false, true] {
+            let accessory = BatteryTheme.yoshi.accessoryColor(dark: dark).usingColorSpace(.sRGB)!
+            checks.append((accessory.greenComponent > accessory.redComponent && accessory.greenComponent > accessory.blueComponent,
+                           "Yoshi charging symbols are green: dark=\(dark)"))
+            let background = dark ? NSColor(white: 0.12, alpha: 1) : NSColor(white: 0.95, alpha: 1)
+            let a = luminance(accessory), b = luminance(background)
+            checks.append(((max(a, b) + 0.05) / (min(a, b) + 0.05) >= 3,
+                           "Yoshi charging symbol contrast: dark=\(dark)"))
+        }
 
         for (passed, description) in checks where !passed {
             FileHandle.standardError.write(Data("FAIL: \(description)\n".utf8))

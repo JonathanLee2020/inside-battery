@@ -7,24 +7,24 @@ bundles `Resources/AppIcon.icns` for Finder, Launchpad and system dialogs; the
 live menu-bar icon continues to show charge level and power mode.
 
 Choose **Themes** for a saved palette with color-swatch previews:
-**💜 Joey 💜** (the default purple palette), **Meadow** (the original grey/charging green), **Yoshi** (yellow/lavender),
-**Tidepool** (sea glass), or **Ember** (apricot). Themes update
+**💜 Joey 💜** (the default warm-lavender palette), **turtwig** (green in every mode), **Yoshi** (green Automatic, yellow Low Power, light-lavender High Power),
+**Piplup** (sea glass), or **Chimchar** (apricot). Themes update
 the menu-bar battery immediately. Themes is a
 separate top-level row below Preferences, with a four-color icon. The app icon
 keeps its purple-and-green artwork.
 
 ## Downloads and package managers
 
-Version **0.2.5** is available as an **Apple Silicon development preview**, with
+Version **0.2.6** is available as an **Apple Silicon development preview**, with
 a ZIP archive and SHA-256 manifest on
-[GitHub Releases](https://github.com/JonathanLee2020/inside-battery/releases/tag/v0.2.5).
+[GitHub Releases](https://github.com/JonathanLee2020/inside-battery/releases/tag/v0.2.6).
 macOS 13 or newer is required; Intel builds are not included.
 
 The preview is ad-hoc signed, not Developer ID signed or notarized. Gatekeeper
 may block downloaded copies. Fresh-install helper approval, power switching,
 and persistence after restarting are unverified for the release build. The
 development Mac uses a temporary helper recovery, not a public installer.
-Read [the release notes](packaging/releases/v0.2.5.md) before installing.
+Read [the release notes](packaging/releases/v0.2.6.md) before installing.
 
 Versions 0.2.1 and earlier require one manual or Homebrew upgrade to get the
 Sparkle updater. From 0.2.2, use **Preferences → Check for Updates…** for
@@ -129,11 +129,14 @@ Developer ID signing and notarization provide the normal trusted-download
 experience; the current preview remains development-only.
 
 The compact menu-bar battery uses bold 10.5-point black tabular numbers inside
-the battery. Its fill, empty remainder and percentage text stay the same
-across energy modes. Automatic has no outline, Low Power has a deeper gold outline,
-and High Power has a dark purple outline. The two colored outlines are thicker. The selected theme supplies the charge
-fill: lavender, original grey/charging green, yellow, sea glass or apricot.
-Yoshi uses a lavender empty portion; the other themes use grey.
+the battery. Most themes retain the same interior across energy modes. turtwig stays green.
+Yoshi Automatic stays green on both power sources, Low Power
+uses the menu circle's yellow, and High Power uses a slightly deeper lavender. Yoshi uses
+black numbers with a contrasting grey empty portion for readable charge level;
+the deeper gold and dark purple outlines remain. Automatic has a neutral grey outline, Low Power has a deeper gold outline,
+and High Power has a dark purple outline. All menu-bar battery outlines are 2pt across themes. The selected theme supplies the charge
+fill: lavender, green, Yoshi mode colors, sea glass or apricot.
+Yoshi Automatic has a grey empty portion and the shared 2pt grey outline.
 Energy Mode menu icons retain the original blue Automatic, yellow Low Power,
 and lavender High Power circles, with uniformly thin native-style battery
 outlines and the original battery/fast-forward glyphs.
@@ -141,8 +144,9 @@ outlines and the original battery/fast-forward glyphs.
 The icon is 30 × 18 points on battery and 35 × 18 on external power. Automatic
 sizing avoids reserving an unused charging-symbol slot while unplugged. Charging
 shows a lightning bolt; plugged in but not charging shows a plug. These symbols
-use white on dark menu bars and black on light menu bars. No status symbol appears
-on battery power. Meadow retains the original grey-to-green adapter indication.
+use white on dark menu bars and black on light menu bars, except Yoshi uses
+contrast-adjusted green for both symbols. No status symbol appears
+on battery power. turtwig retains its green interior on both power sources.
 System power-state notifications update the display, including changes made in
 System Settings. Preferences are read off the main thread so power-mode detection
 does not delay cable-state rendering. The menu-bar icon has no chevrons.
@@ -248,8 +252,8 @@ Generated apps, Swift build artifacts, and local environment files
 are excluded from Git. See [CHANGELOG.md](CHANGELOG.md) for each version's changes
 and verification limits.
 
-The initial snapshot is tagged `v0.1.0`. Version `v0.2.5` is published from
-`release/v0.2.5` as a prerelease with download assets. Publication never pushes
+The initial snapshot is tagged `v0.1.0`. Version `v0.2.6` is published from
+`release/v0.2.6` as a prerelease with download assets. Publication never pushes
 directly to `main`. No source license has been
 selected; publishing source does not itself grant a reuse license.
 
@@ -272,14 +276,13 @@ undoing a specific published change, so shared history remains intact.
 
 The working app remains at `dist/Inside Battery.app`. Release preparation builds
 a separate source-matched app/client/helper set in `.build/release-staging`,
-tests it, and archives it under `dist/releases/v0.2.5`. Checksum-pinned recipes
+tests it, and archives it under `dist/releases/v0.2.6`. Checksum-pinned recipes
 are generated from those exact bytes. The release helper pair differs from the
 development Mac's preserved original pair and needs desktop install testing.
-The 0.2.5 release passed 291 checks, including saved themes, number contrast,
-original Energy Mode icon colors and ZIP round-trip. The public helper/client
-are byte-for-byte identical to 0.2.4, preserving Sparkle compatibility. Public
-ZIP checksum/signatures and signed feed verified; a real 0.2.4 SPUUpdater
-received and parsed 0.2.5. Homebrew fetch/dry run and MacPorts lint passed.
+The 0.2.6 release includes renamed themes, warmer Joey colors, Yoshi mode fills,
+and uniform 2pt borders. 332 self-checks, bundle signatures, helper pinning, and the signed feed/archive
+passed. The public helper pair is unchanged from 0.2.5. Publication details are
+recorded in [handoff.md](handoff.md).
 
 The 0.2.4 release passed 177 checks, including number contrast, selected-circle
 rendering and ZIP round-trip. Public archive checksum/signatures and the signed
@@ -305,7 +308,7 @@ package-manager installation and first launch remain unverified.
 
 Developer ID signing, notarization, fresh-install/restart verification and
 package-manager install tests remain required before calling a release stable.
-The development Mac now runs 0.2.4 with Sparkle while retaining its original
+The development Mac now runs 0.2.6 with Sparkle while retaining its original
 working helper/client pair. Installation verified both files unchanged; a request
 to reapply the current mode completed with saved power preferences unchanged.
 That preserved pair differs from the public archive, so its helper compatibility

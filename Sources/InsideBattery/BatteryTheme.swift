@@ -1,7 +1,11 @@
 import AppKit
 
 enum BatteryTheme: String, CaseIterable, Sendable {
-    case joey, meadow, yoshi, tidepool, ember
+    case joey
+    case turtwig = "meadow"
+    case yoshi
+    case piplup = "tidepool"
+    case chimchar = "ember"
 
     static let preferenceKey = "batteryTheme"
 
@@ -18,20 +22,20 @@ enum BatteryTheme: String, CaseIterable, Sendable {
     var title: String {
         switch self {
         case .joey: "💜 Joey 💜"
-        case .meadow: "Meadow"
+        case .turtwig: "turtwig"
         case .yoshi: "Yoshi"
-        case .tidepool: "Tidepool"
-        case .ember: "Ember"
+        case .piplup: "Piplup"
+        case .chimchar: "Chimchar"
         }
     }
 
     var detail: String {
         switch self {
-        case .joey: "Soft lavender battery fill."
-        case .meadow: "Original grey battery fill, green while connected to power."
-        case .yoshi: "Sunshine yellow charge fill with a lavender empty portion."
-        case .tidepool: "Sea-glass blue battery fill."
-        case .ember: "Warm apricot battery fill."
+        case .joey: "Warm lavender battery fill with a subtle yellow undertone."
+        case .turtwig: "Green battery fill in every energy mode."
+        case .yoshi: "Automatic green on both power sources, Low Power yellow, High Power light lavender, with green charging symbols."
+        case .piplup: "Sea-glass blue battery fill."
+        case .chimchar: "Warm apricot battery fill."
         }
     }
 
@@ -40,27 +44,45 @@ enum BatteryTheme: String, CaseIterable, Sendable {
     }
 
     func progress(for mode: PowerMode, externalPower: Bool = false) -> NSColor {
-        switch self {
-        case .joey: rgb(0.85, 0.74, 0.95)
-        case .meadow: externalPower ? rgb(0.35, 0.95, 0.50) : rgb(0.90, 0.90, 0.90)
-        case .yoshi: rgb(0.95, 0.83, 0.42)
-        case .tidepool: rgb(0.65, 0.89, 0.91)
-        case .ember: rgb(0.97, 0.78, 0.60)
+        if self == .yoshi {
+            if mode == .low { return selection(for: mode) }
+            if mode == .high { return rgb(0.82, 0.65, 0.94) }
+        }
+        return switch self {
+        case .joey: rgb(0.87, 0.76, 0.90)
+        case .turtwig: rgb(0.35, 0.95, 0.50)
+        case .yoshi: rgb(0.55, 0.87, 0.65)
+        case .piplup: rgb(0.65, 0.89, 0.91)
+        case .chimchar: rgb(0.97, 0.78, 0.60)
         }
     }
 
-    func number(for mode: PowerMode) -> NSColor { .black }
+    func number(for mode: PowerMode) -> NSColor {
+        .black
+    }
 
     func surface(for mode: PowerMode) -> NSColor {
-        self == .yoshi ? rgb(0.81, 0.64, 0.91) : rgb(0.72, 0.72, 0.72)
+        self == .yoshi && mode == .high ? rgb(0.62, 0.62, 0.66) : rgb(0.72, 0.72, 0.72)
     }
 
     static func outline(for mode: PowerMode) -> NSColor? {
         switch mode {
-        case .automatic: nil
+        case .automatic: NSColor.black.withAlphaComponent(0.35)
         case .low: NSColor(srgbRed: 0.78, green: 0.57, blue: 0.08, alpha: 1)
         case .high: NSColor(srgbRed: 0.48, green: 0.24, blue: 0.69, alpha: 1)
         }
+    }
+
+    func border(for mode: PowerMode, externalPower: Bool) -> (color: NSColor, width: CGFloat)? {
+        if let color = Self.outline(for: mode) { return (color, 2.0) }
+        return nil
+    }
+
+    func accessoryColor(dark: Bool) -> NSColor {
+        if self == .yoshi {
+            return dark ? rgb(0.35, 0.95, 0.50) : rgb(0.07, 0.52, 0.25)
+        }
+        return dark ? .white : .black
     }
 
     func selection(for mode: PowerMode) -> NSColor {

@@ -4,7 +4,7 @@ enum BatteryIcon {
     static let size = NSSize(width: 35, height: 18)
     static let automaticColor = BatteryTheme.joey.progress(for: .automatic)
 
-    // The theme controls the interior; only the outline indicates energy mode.
+    // The theme controls the interior and numeral contrast; Yoshi also varies by mode.
     static func colors(for state: BatteryState, appearance: NSAppearance?, theme: BatteryTheme = .joey) -> (surface: NSColor, number: NSColor, progress: NSColor) {
         let mode: PowerMode = state.isLowPowerMode && state.isPresent ? .low
             : state.isHighPowerMode && state.isPresent ? .high : .automatic
@@ -41,9 +41,9 @@ enum BatteryIcon {
 
         let mode: PowerMode = state.isLowPowerMode && state.isPresent ? .low
             : state.isHighPowerMode && state.isPresent ? .high : .automatic
-        if let outline = BatteryTheme.outline(for: mode) {
-            outline.setStroke()
-            bodyPath.lineWidth = 1.75
+        if let border = theme.border(for: mode, externalPower: state.isExternalPowerConnected && state.isPresent) {
+            border.color.setStroke()
+            bodyPath.lineWidth = border.width
             bodyPath.stroke()
         }
 
@@ -52,7 +52,7 @@ enum BatteryIcon {
         if state.isExternalPowerConnected && state.isPresent {
             // Keep a fixed-size accessory slot beside the battery terminal.
             let dark = appearance?.bestMatch(from: [.aqua, .darkAqua]) == .darkAqua
-            (dark ? NSColor.white : .black).setFill()
+            theme.accessoryColor(dark: dark).setFill()
             if state.isCharging {
                 let bolt = NSBezierPath()
                 bolt.move(to: NSPoint(x: 33.5, y: 14))

@@ -1,6 +1,138 @@
 # Inside Battery handoff
 
-Updated: 12 October 2026. There is one app build: `dist/Inside Battery.app`.
+Updated: 13 October 2026. There is one app build: `dist/Inside Battery.app`.
+
+## Release 0.2.6 prepared — 13 October 2026
+
+User requested a new release of the current verified changes. Branch release/v0.2.6;
+version 0.2.6/build 8. Includes renamed themes with stable saved IDs, warmer Joey,
+green turtwig, mode-dependent Yoshi fills/green accessories and uniform 2pt borders.
+Release notes: packaging/releases/v0.2.6.md. Existing untracked assets/piplup-sprite.gif
+is unrelated and excluded from publication.
+
+332 self-checks passed before and after ZIP extraction. Full bundle signatures,
+helper/client pinning, signed Sparkle archive/feed and archive round-trip passed.
+Public helper/client and pinned hash are byte-identical to 0.2.5.
+Archive: dist/releases/v0.2.6/InsideBattery-0.2.6-arm64.zip.
+SHA256: 3e8f8a92b038f4a7cb6d9530ebcf9b7c40866d106de9d15841b30313b95445a8.
+Build log: .build/release-0.2.6-verification.log.
+Fresh-install helper approval and actual package installation remain unverified.
+Local running app retains its original helper pair and 0.2.5 bundle metadata.
+
+## Theme names installed — 13 October 2026
+
+User renamed Meadow to `turtwig`, Tidepool to Piplup, and Ember to Chimchar
+in BatteryTheme.swift and requested docs, rebuild and restart. README now uses
+these display names; CHANGELOG records the rename. Published release notes and
+older handoff entries retain their historical names.
+
+Initial build failed because SelfTest still referenced BatteryTheme.meadow.
+Updated references to turtwig. Renamed enum cases retain the old raw preference
+IDs (`meadow`, `tidepool`, `ember`) so existing selections survive; three isolated
+preference checks verify this. Theme order and user-entered capitalization retained.
+
+Release rebuild and installed executable passed 332 self-checks. Deep/strict
+bundle signature verification passed. Installer preserved original helper/client
+byte-for-byte and backed up the previous bundle. Its sandboxed launch failed with
+kLSNoExecutableErr; reopening outside the sandbox succeeded, and launchctl
+confirmed the app running (PID 84802).
+Stage: .build/interface-updates/theme-renames-helper-preserved.1jjgh_jg/Inside Battery.app.
+Backup: .build/rollback-backups/interface-install.IGWe1B/Inside Battery.app.
+Build log: .build/theme-renames-build.log.
+No commit, push or release requested. Live menu click-through was not performed.
+
+## Uniform borders and green Yoshi Automatic installed — 13 October 2026
+
+User requested every theme's battery borders at the same thickness and Yoshi
+Automatic green while charging. All menu-bar outlines now 2pt: grey Automatic,
+gold Low, dark-purple High, in every theme and on both power sources. Energy
+Mode menu icons retain their separate native 1pt outlines. Yoshi Automatic fill
+is green (0.55/0.87/0.65) on both power sources; bright yellow Low and lavender
+High fills are unchanged. Green charging accessories retained.
+
+329 checks passed, including every theme/mode/power-source border width and
+Yoshi external-power green. Signatures and actual renderer preview verified.
+Turn was interrupted after successful verification; resumed by staging existing
+verified build without repeating implementation. Preserved-helper stage:
+.build/interface-updates/uniform-borders-helper-preserved.uuwbmg8c/Inside Battery.app.
+Installed after user confirmed quit. App reopened; installed self-checks passed
+329. Original helper/client verified unchanged. Backup:
+.build/rollback-backups/interface-install.lyUBsA/Inside Battery.app.
+Build log: .build/uniform-borders-build.log.
+No release/commit/push requested. GitHub 0.2.5 remains unchanged.
+
+## Warm Joey and slightly darker High Power installed — 12 October 2026
+
+User requested slightly warmer/yellower Joey lavender, a slightly darker High
+Power purple and bolder outlines. Joey fill changes from 0.85/0.74/0.95 to
+0.87/0.76/0.90. Yoshi High fill changes from the menu circle lavender to slightly
+deeper 0.82/0.65/0.94; Low retains the circle's native yellow. Menu-bar gold/purple
+outlines increase from 1.75pt to 2pt. Automatic thin/no outlines unchanged.
+Energy Mode circles and 1pt native-style battery outlines remain unchanged.
+
+301 checks and signatures passed. Prior exact High circle-fill equality updated
+to assert a modest luminance reduction while preserving readable percentage text.
+Actual renderer preview regenerated: dist/design/themes-preview.png.
+Stage: .build/interface-updates/warm-lavender-helper-preserved.qtxt_r75/Inside Battery.app.
+Installed after user confirmed quit; app reopened and installed checks passed 301.
+Original helper/client verified unchanged. Backup:
+.build/rollback-backups/interface-install.LVSBOO/Inside Battery.app.
+Build log: .build/warm-lavender-build.log. No release requested.
+
+## Brighter Yoshi mode fills installed — 12 October 2026
+
+User wanted Low Power to match the selected circle's native yellow, and High
+Power purple lighter. Yoshi Low/High now use the same colors as their original
+Energy Mode circles: systemYellow and lavender (0.86/0.69/0.98). Deeper gold/dark
+purple borders retained. High returns to black numerals and grey empty area
+(0.62/0.62/0.66) for readable partial charge. Automatic and Meadow unchanged.
+301 checks and signatures passed; changed prior exact border-fill equality check
+to circle-fill equality for Low/High on both power sources. Preview regenerated.
+User already quit, so no question. Staged/installed with original helper/client
+unchanged; app reopened and installed self-checks passed 301.
+Stage: .build/interface-updates/yoshi-bright-helper-preserved.e6_j7_oy/Inside Battery.app.
+Backup: .build/rollback-backups/interface-install.ZLFDmB/Inside Battery.app.
+Build log: .build/yoshi-bright-build.log. No release/commit/push requested.
+
+## Yoshi mode fills and Meadow green installed — 12 October 2026
+
+User clarified Yoshi Low/High should match border colors. Yoshi Automatic remains
+green on battery and purple on external power; Low fills exactly the gold outline
+color (0.78/0.57/0.08), High exactly the dark purple outline (0.48/0.24/0.69).
+High uses white numerals and dark-grey empty area for >=4.5:1 contrast across
+filled/empty areas. Green accessories and thin unplugged Automatic outline remain.
+Meadow stays green in every mode and on both power sources. Menu circles unchanged.
+Updated prior shared-fill invariant to reflect intentional Yoshi mode differences;
+301 checks passed, including actual palette contrast, saved themes and match of
+Low/High fill with outline on both power sources. Preview regenerated from renderer.
+
+User had already quit; no repeated question. Preserved-helper stage:
+.build/interface-updates/yoshi-modes-helper-preserved.d496c9vg/Inside Battery.app.
+Installed/reopened; installed self-checks passed 301, original helper/client unchanged.
+Backup: .build/rollback-backups/interface-install.WLxKfJ/Inside Battery.app.
+Build log: .build/yoshi-mode-build.log. Source change only; no new release requested.
+
+## Yoshi power-state adjustment installed — 12 October 2026
+
+User clarified Yoshi: green Automatic on battery, purple while connected,
+original subtle border when off charger, green lightning/plug accessories.
+Interpreted border request as restoring the original 0.75pt black-at-35% outline
+for Yoshi Automatic on battery power; explicit Low gold / High purple borders
+remain 1.75pt. Connected includes active and paused charging. Green charge fill
+(0.55/0.87/0.65) and purple connected fill (0.81/0.64/0.91); remainder grey.
+Accessory green is bright (0.35/0.95/0.50) in dark appearance and deeper
+(0.07/0.52/0.25) in light appearance for >=3:1 contrast. Other themes unchanged.
+Energy Mode menu circles/outlines unchanged. No new release requested.
+
+Build, signature validation and 299 self-checks passed. Added tests for Yoshi
+power-source colors, thin unplugged outline and accessory color/contrast.
+Actual rendering preview: dist/design/yoshi-power-preview.png.
+Preserved-helper stage: .build/interface-updates/yoshi-power-helper-preserved.cut6nlbz/Inside Battery.app.
+Installed after user confirmed quit. App reopened; installed self-checks passed
+299. Original helper/client verified unchanged. Backup:
+.build/rollback-backups/interface-install.3xzoRf/Inside Battery.app.
+Build log: .build/yoshi-power-build.log.
+GitHub 0.2.5 remains the published yellow/purple Yoshi version until a new release.
 
 ## Published themes release — 0.2.5
 
@@ -26,8 +158,11 @@ SHA256: a805d49b5f01792ca9651f62110aea7f470cc401712dc8f9fa885aba32d6e19c.
 Build log: .build/release-0.2.5-verification.log.
 Local preserved-helper stage passed 291 checks and signatures:
 .build/interface-updates/v0.2.5-helper-preserved.x4p3fop8/Inside Battery.app.
-Asked user to quit before installing. Public app and local retained helper pairs
-still differ; no service registration will be changed for the local update.
+Installed after user confirmed quit. App reopened as 0.2.5; installed executable
+passed 291 checks. Installer verified original helper/client byte-for-byte unchanged.
+Backup: .build/rollback-backups/interface-install.MOIZ9o/Inside Battery.app.
+Public app and local retained helper pairs still differ; no service registration
+or root service replacement was performed for the local update.
 
 ## Restored Energy Mode icons and deeper outlines — 12 October 2026
 

@@ -1,8 +1,8 @@
 cask "inside-battery" do
-  version "0.2.5"
-  sha256 "a805d49b5f01792ca9651f62110aea7f470cc401712dc8f9fa885aba32d6e19c"
+  version "0.2.6"
+  sha256 "3e8f8a92b038f4a7cb6d9530ebcf9b7c40866d106de9d15841b30313b95445a8"
 
-  url "https://github.com/JonathanLee2020/inside-battery/releases/download/v0.2.5/InsideBattery-0.2.5-arm64.zip"
+  url "https://github.com/JonathanLee2020/inside-battery/releases/download/v0.2.6/InsideBattery-0.2.6-arm64.zip"
   name "Inside Battery"
   desc "Battery percentage inside a native macOS menu-bar icon"
   homepage "https://github.com/JonathanLee2020/inside-battery"

@@ -4,6 +4,16 @@ Versions preserve source snapshots and, from 0.2.0, prepared downloadable previe
 
 ## Unreleased
 
+## 0.2.6 — 2026-10-13 (development preview)
+
+- Renamed Meadow to turtwig, Tidepool to Piplup, and Ember to Chimchar;
+  existing saved selections are preserved.
+- Joey uses warmer lavender. turtwig stays green across all energy modes.
+- Yoshi uses green Automatic on both power sources, yellow Low Power, and
+  light-lavender High Power, with green charging symbols.
+- Every menu-bar battery outline is 2pt: grey Automatic, gold Low Power,
+  dark-purple High Power. Energy Mode menu icons retain their thin outlines.
+
 ## 0.2.5 — 2026-10-12 (development preview)
 
 - Saved Themes submenu with native color-swatch rows: 💜 Joey 💜, Meadow (the
