@@ -2,6 +2,47 @@
 
 Updated: 16 October 2026. There is one app build: `dist/Inside Battery.app`.
 
+## Release 0.2.11 prepared — 16 October 2026
+
+User requested publication of Test Joey's corrected palette alignment.
+Branch release/v0.2.11; version 0.2.11/build 13. All six theme rows use the same
+custom layout; Test Joey keeps its text label. Sprite sizes remain 20x26pt/30pt
+rows; Small is still recorded as 18x24pt/28pt rows.
+
+375 bundled checks passed before/after ZIP extraction. Complete signatures,
+helper pinning, signed archive/feed and ZIP round-trip passed. Helpers/client/hash
+and all five sprite GIFs are byte-identical to 0.2.10. Prior render check measured
+all six swatch rows at x22pt, with accessible-name/selection checks passed.
+Archive: dist/releases/v0.2.11/InsideBattery-0.2.11-arm64.zip.
+SHA256: f0ac96501cd352baad932b04c04e55795183e89f57c6f88fb4f389221e6213bb.
+Build log: .build/release-0.2.11-verification.log.
+Release scripts used RELEASE_PYTHON=/opt/local/bin/python3.13; no feed failure.
+Local app already has the alignment fix and retains 0.2.8 bundle metadata and
+its original working helper pair. Fresh-install helper approval and actual
+package installation remain unverified. Unrelated editor settings/unused GIFs
+are excluded from the release commit.
+
+## Test Joey swatch alignment fixed locally — 16 October 2026
+
+User reported Test Joey palette misalignment after 0.2.10 publication. Computer
+Use inspection timed out; user then supplied a menu screenshot that reproduced
+the offset. Cause: Test Joey used a native NSMenuItem text layout while the other
+five themes used custom sprite rows with different swatch offsets/row height.
+ThemeSpriteRow now supports an explicit text-only row, and AppDelegate assigns
+that same layout to all six theme items. Test Joey keeps its visible text label;
+all rows retain accessibility labels, checkmarks and selection actions.
+
+Release rebuild/signatures passed. All six rows passed an action/accessibility
+harness, and actual rendered pixel checks measured every swatch row starting at
+x22pt: [22,22,22,22,22,22]. Preview: .build/theme-row-alignment.png.
+Staged/installed bundles passed 375 self-checks. Installed after user confirmed
+quit; original helper/client unchanged; app restarted (PID 36384).
+Stage: .build/interface-updates/theme-row-alignment-helper-preserved.ae07uq7f/Inside Battery.app.
+Backup: .build/rollback-backups/interface-install.mFVVTl/Inside Battery.app.
+Build log: .build/theme-row-alignment-build.log.
+Local bundle metadata remains 0.2.8. This fix is not in published 0.2.10.
+No further release/commit/push requested for the alignment fix.
+
 ## Release 0.2.10 published — 16 October 2026
 
 Published: https://github.com/JonathanLee2020/inside-battery/releases/tag/v0.2.10

@@ -17,16 +17,18 @@ final class ThemeSpriteRow: NSView {
         return image
     }
 
-    init(item: NSMenuItem, sprite: NSImage) {
+    init(item: NSMenuItem, sprite: NSImage? = nil) {
         self.item = item
         // Small baseline: 18×24pt sprite in a 28pt row; recorded in handoff.md.
         super.init(frame: NSRect(x: 0, y: 0, width: 260, height: 30))
         autoresizingMask = [.width]
         spriteView.frame = NSRect(x: 150, y: 2, width: 20, height: 26)
         spriteView.imageScaling = .scaleProportionallyUpOrDown
-        spriteView.image = sprite
-        spriteView.animates = true
-        addSubview(spriteView)
+        if let sprite {
+            spriteView.image = sprite
+            spriteView.animates = true
+            addSubview(spriteView)
+        }
         setAccessibilityElement(true)
         setAccessibilityRole(.button)
         setAccessibilityLabel(item.title)
@@ -46,6 +48,13 @@ final class ThemeSpriteRow: NSView {
             NSBezierPath(roundedRect: bounds.insetBy(dx: 4, dy: 1), xRadius: 5, yRadius: 5).fill()
         }
         item.image?.draw(in: NSRect(x: 22, y: bounds.midY - 9, width: 116, height: 18))
+        if spriteView.image == nil {
+            let color: NSColor = hovered ? .selectedMenuItemTextColor : .labelColor
+            let title = NSAttributedString(string: item.title, attributes: [
+                .font: NSFont.menuFont(ofSize: 13), .foregroundColor: color
+            ])
+            title.draw(at: NSPoint(x: 150, y: bounds.midY - title.size().height / 2))
+        }
         if item.state == .on {
             let color: NSColor = hovered ? .selectedMenuItemTextColor : .labelColor
             NSAttributedString(string: "✓", attributes: [.font: NSFont.menuFont(ofSize: 13), .foregroundColor: color])

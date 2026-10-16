@@ -134,7 +134,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             item.image = theme.swatchImage()
             item.toolTip = theme.detail
             item.state = theme == BatteryTheme.current ? .on : .off
-            if let sprite = sprites[theme] { item.view = ThemeSpriteRow(item: item, sprite: sprite) }
+            item.view = ThemeSpriteRow(item: item, sprite: sprites[theme])
             themeItems[theme] = item
             themesMenu.addItem(item)
         }

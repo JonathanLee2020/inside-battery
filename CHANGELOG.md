@@ -4,6 +4,11 @@ Versions preserve source snapshots and, from 0.2.0, prepared downloadable previe
 
 ## Unreleased
 
+## 0.2.11 — 2026-10-16 (development preview)
+
+- Test Joey uses the same row layout as sprite themes so its palette swatches
+  align with the other rows, while retaining its text label.
+
 ## 0.2.10 — 2026-10-16 (development preview)
 
 - Sprite display bounds are 20×26pt; the previous 18×24pt size is recorded as Small.
