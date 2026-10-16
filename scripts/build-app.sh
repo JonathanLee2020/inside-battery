@@ -33,6 +33,7 @@ mkdir -p "$APP_DIR/Contents/MacOS" "$APP_DIR/Contents/Resources" "$APP_DIR/Conte
 cp "$BIN_DIR/InsideBattery" "$APP_DIR/Contents/MacOS/InsideBattery"
 cp Resources/Info.plist "$APP_DIR/Contents/Info.plist"
 cp Resources/AppIcon.icns "$APP_DIR/Contents/Resources/AppIcon.icns"
+cp Resources/PiplupTheme.gif Resources/JoeyTheme.gif Resources/TurtwigTheme.gif Resources/ChimcharTheme.gif Resources/YoshiTheme.gif "$APP_DIR/Contents/Resources/"
 FRAMEWORK='.build/artifacts/sparkle/Sparkle/Sparkle.xcframework/macos-arm64_x86_64/Sparkle.framework'
 mkdir -p "$APP_DIR/Contents/Frameworks"
 ditto "$FRAMEWORK" "$APP_DIR/Contents/Frameworks/Sparkle.framework"

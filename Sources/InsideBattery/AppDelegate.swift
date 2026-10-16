@@ -31,7 +31,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        configureMenu()
+        do { try configureMenu() }
+        catch {
+            NSAlert(error: error).runModal()
+            NSApp.terminate(nil)
+            return
+        }
         if let checkUpdatesItem { appUpdater.start(menuItem: checkUpdatesItem) }
         monitor = BatteryMonitor { [weak self] state in
             self?.update(state)
@@ -50,7 +55,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         energyTimeoutTask?.cancel()
     }
 
-    private func configureMenu() {
+    private func configureMenu() throws {
         statusItem.button?.imagePosition = .imageOnly
         statusItem.button?.toolTip = "Inside Battery"
 
@@ -115,6 +120,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         let themesItem = NSMenuItem(title: "Themes", action: nil, keyEquivalent: "")
         let themesMenu = NSMenu()
         themesMenu.autoenablesItems = false
+        let sprites: [BatteryTheme: NSImage] = [
+            .piplup: try ThemeSpriteRow.loadSprite(named: "PiplupTheme"),
+            .joey: try ThemeSpriteRow.loadSprite(named: "JoeyTheme"),
+            .turtwig: try ThemeSpriteRow.loadSprite(named: "TurtwigTheme"),
+            .chimchar: try ThemeSpriteRow.loadSprite(named: "ChimcharTheme"),
+            .yoshi: try ThemeSpriteRow.loadSprite(named: "YoshiTheme")
+        ]
         for theme in BatteryTheme.allCases {
             let item = NSMenuItem(title: theme.title, action: #selector(selectTheme(_:)), keyEquivalent: "")
             item.target = self
@@ -122,6 +134,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             item.image = theme.swatchImage()
             item.toolTip = theme.detail
             item.state = theme == BatteryTheme.current ? .on : .off
+            if let sprite = sprites[theme] { item.view = ThemeSpriteRow(item: item, sprite: sprite) }
             themeItems[theme] = item
             themesMenu.addItem(item)
         }
@@ -191,7 +204,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         guard let value = sender.representedObject as? String,
               let theme = BatteryTheme(rawValue: value) else { return }
         theme.save()
-        for (candidate, item) in themeItems { item.state = candidate == theme ? .on : .off }
+        for (candidate, item) in themeItems {
+            item.state = candidate == theme ? .on : .off
+            item.view?.needsDisplay = true
+        }
         display(currentState)
     }
 

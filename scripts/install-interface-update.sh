@@ -29,6 +29,11 @@ fi
 if [ -f "$STAGED/Contents/Resources/AppIcon.icns" ]; then
     /bin/cp "$STAGED/Contents/Resources/AppIcon.icns" "$APP/Contents/Resources/AppIcon.icns"
 fi
+for SPRITE in PiplupTheme.gif JoeyTheme.gif TurtwigTheme.gif ChimcharTheme.gif YoshiTheme.gif; do
+    if [ -f "$STAGED/Contents/Resources/$SPRITE" ]; then
+        /bin/cp "$STAGED/Contents/Resources/$SPRITE" "$APP/Contents/Resources/$SPRITE"
+    fi
+done
 /usr/bin/codesign --force --sign - "$APP"
 /usr/bin/codesign --verify --deep --strict "$APP"
 /usr/bin/cmp "$APP/Contents/Helpers/InsideBatteryPowerClient" "$BACKUP/Inside Battery.app/Contents/Helpers/InsideBatteryPowerClient"

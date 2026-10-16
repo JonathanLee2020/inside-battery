@@ -1,5 +1,6 @@
 import AppKit
 import IOKit.ps
+import ImageIO
 
 enum SelfTest {
     @MainActor
@@ -13,6 +14,18 @@ enum SelfTest {
             (chargingLabel == "Battery 73 percent, charging", "describes charging state (got: \(chargingLabel))"),
             (BatteryState.unavailable.accessibilityLabel == "Battery unavailable", "describes an unavailable battery")
         ]
+        if Bundle.main.bundleURL.pathExtension == "app" {
+            for (name, expectedFrames) in [("PiplupTheme", 2), ("JoeyTheme", 2), ("TurtwigTheme", 84), ("ChimcharTheme", 140), ("YoshiTheme", 10)] {
+                do {
+                    let sprite = try ThemeSpriteRow.loadSprite(named: name)
+                    checks.append((sprite.isValid, "bundled \(name) sprite decodes"))
+                    let url = Bundle.main.bundleURL.appendingPathComponent("Contents/Resources/\(name).gif")
+                    if let source = CGImageSourceCreateWithURL(url as CFURL, nil) {
+                        checks.append((CGImageSourceGetCount(source) == expectedFrames, "bundled \(name) preserves all animation frames"))
+                    } else { checks.append((false, "bundled \(name) GIF opens")) }
+                } catch { checks.append((false, "bundled \(name) sprite: \(error.localizedDescription)")) }
+            }
+        }
         func allowsHelperUpdate(_ installed: String, _ published: String?, active: Bool = true) -> Bool {
             do {
                 try AppUpdater.validateHelperUpdate(installedHash: installed, publishedHash: published, helperActive: active)

@@ -7,24 +7,24 @@ bundles `Resources/AppIcon.icns` for Finder, Launchpad and system dialogs; the
 live menu-bar icon continues to show charge level and power mode.
 
 Choose **Themes** for a saved palette with color-swatch previews:
-**💜 Joey 💜** (default medium purple, slightly darker in High Power), **turtwig** (green in every mode), **Yoshi** (green Automatic, yellow Low Power, light-lavender High Power),
-**Piplup** (cool blue), **Chimchar** (soft red), or **Test Joey** (Joey purple with a grey Automatic border, listed last). Themes has its own menu section, separated from Preferences and Quit. Themes update
+**💜 Joey 💜** (default medium purple, slightly darker in High Power; purple animated sprite in the menu), **turtwig** (green in every mode; animated Turtwig sprite in the menu), **Yoshi** (green Automatic, yellow Low Power, light-lavender High Power; animated Yoshi without the egg or background),
+**Piplup** (cool blue; animated sprite in the menu), **Chimchar** (soft red; animated sprite in the menu), or **Test Joey** (Joey purple with a grey Automatic border, listed last). Themes has its own menu section, separated from Preferences and Quit. Themes update
 the menu-bar battery immediately. Themes is a
 separate top-level row below Preferences, with a four-color icon. The app icon
 keeps its purple-and-green artwork.
 
 ## Downloads and package managers
 
-Version **0.2.9** is available as an **Apple Silicon development preview**, with
+Version **0.2.10** is available as an **Apple Silicon development preview**, with
 a ZIP archive and SHA-256 manifest on
-[GitHub Releases](https://github.com/JonathanLee2020/inside-battery/releases/tag/v0.2.9).
+[GitHub Releases](https://github.com/JonathanLee2020/inside-battery/releases/tag/v0.2.10).
 macOS 13 or newer is required; Intel builds are not included.
 
 The preview is ad-hoc signed, not Developer ID signed or notarized. Gatekeeper
 may block downloaded copies. Fresh-install helper approval, power switching,
 and persistence after restarting are unverified for the release build. The
 development Mac uses a temporary helper recovery, not a public installer.
-Read [the release notes](packaging/releases/v0.2.9.md) before installing.
+Read [the release notes](packaging/releases/v0.2.10.md) before installing.
 
 Versions 0.2.1 and earlier require one manual or Homebrew upgrade to get the
 Sparkle updater. From 0.2.2, use **Preferences → Check for Updates…** for
@@ -252,8 +252,8 @@ Generated apps, Swift build artifacts, and local environment files
 are excluded from Git. See [CHANGELOG.md](CHANGELOG.md) for each version's changes
 and verification limits.
 
-The initial snapshot is tagged `v0.1.0`. Version `v0.2.9` is published from
-`release/v0.2.9` as a prerelease with download assets. Publication never pushes
+The initial snapshot is tagged `v0.1.0`. Version `v0.2.10` is published from
+`release/v0.2.10` as a prerelease with download assets. Publication never pushes
 directly to `main`. No source license has been
 selected; publishing source does not itself grant a reuse license.
 
@@ -276,14 +276,14 @@ undoing a specific published change, so shared history remains intact.
 
 The working app remains at `dist/Inside Battery.app`. Release preparation builds
 a separate source-matched app/client/helper set in `.build/release-staging`,
-tests it, and archives it under `dist/releases/v0.2.9`. Checksum-pinned recipes
+tests it, and archives it under `dist/releases/v0.2.10`. Checksum-pinned recipes
 are generated from those exact bytes. The release helper pair differs from the
 development Mac's preserved original pair and needs desktop install testing.
-The 0.2.9 release gives Test Joey the same darker grey Automatic border color
-as the other themes. 365 self-checks, bundle signatures, helper pinning, and
-signed feed/archive passed. Public helpers are unchanged from 0.2.8. Publication
-details are recorded
-in [handoff.md](handoff.md).
+The 0.2.10 release adds five transparent animated theme sprites with 20×26pt
+display bounds. 375 bundled self-checks, ZIP extraction, bundle signatures,
+helper pinning, and the signed feed/archive passed. The public helper pair is
+unchanged from 0.2.9. Publication details are recorded in
+[handoff.md](handoff.md). The Small baseline is 18×24pt in a 28pt menu row.
 
 The 0.2.4 release passed 177 checks, including number contrast, selected-circle
 rendering and ZIP round-trip. Public archive checksum/signatures and the signed
@@ -335,3 +335,21 @@ iconutil -c icns .build/app-icon.iconset -o Resources/AppIcon.icns
 For a 30-second live notification diagnostic, run the app executable with
 `--watch-battery`, then unplug and reconnect the charger. Each line is an initial
 reading or a macOS notification, timestamped relative to diagnostic startup.
+
+## Regenerating theme sprites
+
+App builds use the prepared GIFs in Resources; Pillow is needed only to regenerate
+those files. With Python and Pillow 12.2 or newer, run:
+
+```sh
+python3 scripts/prepare-piplup-sprite.py
+python3 scripts/theme_gif.py assets/turtwig/turtwig-sprite.gif Resources/TurtwigTheme.gif 240
+python3 scripts/prepare-extra-theme-sprites.py
+```
+
+The original source GIFs remain unchanged. Frame counts, timing, transparency,
+and palette error are checked during conversion. Source GIFs used by these
+commands are included under assets; unused GIF experiments are not release inputs.
+
+Release scripts accept `RELEASE_PYTHON` to choose a working Python interpreter
+for plist/XML and signing helpers (for example, `RELEASE_PYTHON=python3.13`).

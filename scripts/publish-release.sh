@@ -3,6 +3,7 @@
 set -eu
 cd "$(dirname "$0")/.."
 PROJECT="$PWD"
+RELEASE_PYTHON="${RELEASE_PYTHON:-python3}"
 VERSION=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' Resources/Info.plist)
 BRANCH="release/v$VERSION"
 REPO='JonathanLee2020/inside-battery'
@@ -10,7 +11,7 @@ TAP_REPO='JonathanLee2020/homebrew-inside-battery'
 OUT="$PROJECT/dist/releases/v$VERSION"
 ARCHIVE="$OUT/InsideBattery-$VERSION-arm64.zip"
 test "$(git branch --show-current)" = "$BRANCH" || { echo "Expected branch $BRANCH." >&2; exit 1; }
-python3 - "$OUT/release.json" "$ARCHIVE" "$VERSION" <<'PY'
+"$RELEASE_PYTHON" - "$OUT/release.json" "$ARCHIVE" "$VERSION" <<'PY'
 import hashlib, json, pathlib, sys
 manifest = json.loads(pathlib.Path(sys.argv[1]).read_text())
 archive = pathlib.Path(sys.argv[2])

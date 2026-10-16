@@ -4,6 +4,18 @@ Versions preserve source snapshots and, from 0.2.0, prepared downloadable previe
 
 ## Unreleased
 
+## 0.2.10 — 2026-10-16 (development preview)
+
+- Sprite display bounds are 20×26pt; the previous 18×24pt size is recorded as Small.
+
+- Removed the pale edge matte from Piplup and its purple Joey variant,
+  preserving the white face and belly details.
+
+- Joey, Piplup, turtwig, Chimchar, and Yoshi use compact transparent animated
+  sprites instead of visible theme labels. Yoshi excludes the egg and background.
+  Joey recolors the blue sprite shades purple; color swatches,
+  selection state, and accessible theme names remain.
+
 ## 0.2.9 — 2026-10-13 (development preview)
 
 - Test Joey Automatic now uses the same darker grey border color as Yoshi

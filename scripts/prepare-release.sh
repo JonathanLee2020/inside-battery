@@ -3,6 +3,7 @@
 set -eu
 cd "$(dirname "$0")/.."
 PROJECT="$PWD"
+RELEASE_PYTHON="${RELEASE_PYTHON:-python3}"
 VERSION=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' Resources/Info.plist)
 NOTES="$PROJECT/packaging/releases/v$VERSION.md"
 test -f "$NOTES" || { echo "Missing release notes: $NOTES" >&2; exit 1; }
@@ -47,10 +48,10 @@ ditto -x -k "$OUT/$ARCHIVE" "$STAGING/unpacked"
 codesign --verify --deep --strict "$STAGING/unpacked/Inside Battery.app"
 "$STAGING/unpacked/Inside Battery.app/Contents/MacOS/InsideBattery" --self-test
 cp "$NOTES" "$OUT/RELEASE-NOTES.md"
-python3 scripts/write-release-recipes.py "$OUT/$ARCHIVE" "$VERSION" "$RELEASE_KIND"
+"$RELEASE_PYTHON" scripts/write-release-recipes.py "$OUT/$ARCHIVE" "$VERSION" "$RELEASE_KIND"
 if /usr/libexec/PlistBuddy -c 'Print :SUPublicEDKey' Resources/Info.plist >/dev/null 2>&1; then
     cp packaging/sparkle/LICENSE "$OUT/Sparkle-LICENSE.txt"
-    python3 scripts/prepare-update-feed.py "$OUT/$ARCHIVE" --notes "$NOTES" --output "$OUT/appcast.xml"
+    "$RELEASE_PYTHON" scripts/prepare-update-feed.py "$OUT/$ARCHIVE" --notes "$NOTES" --output "$OUT/appcast.xml"
 fi
 echo "PASS: release archive round-trip verifies: $OUT/$ARCHIVE"
 echo 'Fresh-install helper approval and power switching are NOT verified by packaging.'

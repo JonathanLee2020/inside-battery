@@ -1,6 +1,189 @@
 # Inside Battery handoff
 
-Updated: 13 October 2026. There is one app build: `dist/Inside Battery.app`.
+Updated: 16 October 2026. There is one app build: `dist/Inside Battery.app`.
+
+## Release 0.2.10 prepared — 16 October 2026
+
+User requested a release of all five sprite rows, then requested a tiny size
+increase before publication and a record of the existing size as Small.
+Branch release/v0.2.10; version 0.2.10/build 12. Current sprites are 20x26pt in
+30pt rows. Small remains documented below as 18x24pt in 28pt rows, with a saved
+preview at dist/design/theme-sprites-small-18x24.png. No size preference UI added.
+
+Includes Piplup edge cleanup, purple Joey, actual Turtwig and Chimchar animations,
+and Yoshi isolated without egg/background. Only the four source GIFs used by the
+preparation scripts are included from assets. Unused GIF experiments and .vscode
+settings remain untracked and excluded from the release commit.
+375 bundled checks passed before/after ZIP extraction. Bundle signatures, helper
+pinning and all five bundled sprite byte comparisons passed. Public helper/client
+and pinned hash are byte-identical to 0.2.9.
+Archive: dist/releases/v0.2.10/InsideBattery-0.2.10-arm64.zip.
+SHA256: 733cdb3b5040352c0063e8619cd68464cd308869ef8ca8617b1cbd55eaac8155.
+
+Initial prepare-release.sh exited 1 at feed signing: default Homebrew Python 3.15
+cannot load pyexpat (missing _XML_SetAllocTrackerActivationThreshold in system
+libexpat). The archive and verification had already completed. Kept the archive
+and finished signed-feed preparation with installed /opt/local/bin/python3.13;
+archive checksum reverified unchanged. Both release scripts now accept
+RELEASE_PYTHON, and publication uses Python 3.13. No system Python changes made.
+Build/failure log: .build/release-0.2.10-verification.log.
+Recovery log: .build/release-0.2.10-feed-recovery.log.
+
+Slightly larger sprites installed locally after user confirmed quit. 375 installed
+checks/signatures passed, working helper/client unchanged; app reopened (PID 34415).
+Stage: .build/interface-updates/theme-sprites-larger-helper-preserved.fttu970s/Inside Battery.app.
+Backup: .build/rollback-backups/interface-install.5I8wa5/Inside Battery.app.
+Local working app retains 0.2.8 metadata. Public release is a separate fresh bundle.
+Fresh-install helper approval and actual package installation remain unverified.
+
+## Theme sprite size reference — 16 October 2026
+
+User requested a tiny size increase before releasing and asked to preserve the
+previous size under the name Small. These are display bounds in macOS points;
+source GIF pixels and animation timing are unchanged. Aspect ratio is preserved.
+
+| Reference | Sprite bounds | Menu row height | Sprite origin |
+| --- | --- | --- | --- |
+| Small (saved baseline) | 18×24pt | 28pt | x150, y2 |
+| Slightly larger (current trial) | 20×26pt | 30pt | x150, y2 |
+
+Small preview saved at dist/design/theme-sprites-small-18x24.png.
+To restore Small, set the ThemeSpriteRow frame height to 28 and spriteView bounds
+to 18×24; keep its x150/y2 origin. No user-facing size setting was added.
+
+## Chimchar and isolated dancing Yoshi sprites installed — 16 October 2026
+
+User requested the same compact animated treatment for Chimchar and Yoshi,
+explicitly excluding Yoshi's egg/background. Found reorganized assets:
+assets/chimchar/chimchar-sprite.gif (140 frames, 50ms, 41x55, already transparent)
+and assets/yoshi/yoshi-tv-yoshi-bailando.gif (10 frames, 100ms, 220x220). The
+other Yoshi running GIF was not used. Updated Piplup preparation source path
+for user-reorganized assets/piplup/piplup-sprite.gif.
+
+scripts/prepare-extra-theme-sprites.py writes Resources/ChimcharTheme.gif and
+Resources/YoshiTheme.gif. Chimchar's original 140 frames/opaque pixels/alpha
+verified exact. Yoshi masks the muted green background from the frame edges,
+then retains the largest connected foreground component (Yoshi) and discards
+the separate egg. All 10 frames inspected on a dark contact sheet, full character
+retained with no egg/background. Shared crop canvas 117x182 prevents frame jitter.
+Both outputs retain timing/loop and have zero palette error against prepared frames.
+
+App menu loads both into the same 18x24pt sprite/28pt row as the earlier themes.
+Build/installer copy all five GIFs; bundled self-tests cover each frame count.
+README/CHANGELOG updated. Release build and staged/installed signatures passed;
+375 installed self-checks passed. All five sprite rows passed accessible-name and
+action-dispatch harness; actual row render inspected (.build/theme-sprite-rows.png).
+No live menu playback click-through claimed (Computer Use unavailable previously).
+Installed after user confirmed quit; original helper/client unchanged, app
+restarted (PID 32144). Stage:
+.build/interface-updates/chimchar-yoshi-sprites-helper-preserved.2oggbr1i/Inside Battery.app.
+Backup: .build/rollback-backups/interface-install.ajI9en/Inside Battery.app.
+Build log: .build/chimchar-yoshi-sprites-build.log.
+No release/commit/push requested; local bundle metadata remains 0.2.8.
+
+## Piplup pale matte edge removed — 16 October 2026
+
+User reported white background clipping on Piplup. Reproduced on enlarged
+per-frame dark-background previews: the pure white backdrop was transparent,
+but edge-connected pale blue-grey (189/205/222) matte remained in the sprite.
+Updated scripts/prepare-piplup-sprite.py with an eight-connected exterior matte
+cleanup before recoloring. It stops at solid white details, retaining every
+white face/belly pixel. Removed 217 matte pixels in frame 0 and 206 in frame 1.
+All other RGB values, both frames, 280ms timing/loop retained with zero palette
+error. Regenerated both Piplup and its derived purple Joey variant. Turtwig unchanged.
+
+Build passed; staged/installed bundles passed 371 self-checks. All three sprite
+rows passed accessible-name/theme-action harness; actual row render inspected
+(.build/theme-sprite-rows.png). No live menu playback click-through claimed.
+Installed after user confirmed quit; signatures valid, helper/client unchanged;
+app restarted (PID 29961). Stage:
+.build/interface-updates/piplup-edge-cleanup-helper-preserved.4h20jvfq/Inside Battery.app.
+Backup: .build/rollback-backups/interface-install.etEvfo/Inside Battery.app.
+Build log: .build/piplup-edge-cleanup-build.log.
+No release/commit/push requested; local bundle metadata remains 0.2.8.
+
+## Transparent Turtwig menu sprite installed — 16 October 2026
+
+User requested the same sprite treatment for turtwig. Found actual new source
+assets/turtwig-sprite.gif and used Turtwig rather than recoloring Piplup.
+Resources/TurtwigTheme.gif replaces visible turtwig text in the same 18x24pt
+sprite view/28pt row. Accessible name, swatches and selection action retained.
+Source unchanged: 84 frames, 60ms each, looping; output cropped to 205x277.
+
+Extracted shared preparation into scripts/theme_gif.py. Reproduce Turtwig with:
+/opt/local/bin/python3.13 scripts/theme_gif.py assets/turtwig-sprite.gif Resources/TurtwigTheme.gif 240
+The 240 cutoff removes edge-connected off-white background while preserving
+interior details. Initial octree conversion failed the pixel-preservation check;
+exact palette attempt then rejected frames with 256 opaque colors (a transparency
+slot needs one of those 256 entries). Final encoder uses exact indexed colors and
+only merges nearest shades where needed, rejecting errors >8/255; actual maximum
+error is 5/255. All 84 frames, timing, loop and alpha verified. Regenerated Piplup
+and Joey through the shared helper: both retain zero pixel error and timing.
+Build/installer and bundled frame-count checks now include Turtwig.
+
+Release build passed 365 source self-checks; staged/installed bundles passed 371.
+All three sprite rows passed accessible-name/theme-action harness. Actual row
+render inspected: .build/theme-sprite-rows.png. Live menu playback remains
+unverified through Computer Use (unavailable on preceding turns).
+Installed after user confirmed quit; valid signatures and unchanged helper/client;
+app restarted (PID 27574). Stage:
+.build/interface-updates/turtwig-sprite-helper-preserved.pq9gh3h8/Inside Battery.app.
+Backup: .build/rollback-backups/interface-install.xepWp9/Inside Battery.app.
+Build log: .build/turtwig-sprite-build.log.
+No release/commit/push requested; local bundle metadata remains 0.2.8.
+
+## Smaller Piplup and purple Joey sprites installed — 16 October 2026
+
+User requested smaller Piplup and corresponding blue-to-purple shades for Joey.
+Both menu sprites now 18x24pt (was 30x38); row height 28pt (was 44). Piplup keeps
+its blue sprite; Joey gets a purple variant in place of visible text. Test Joey
+retains its text. Accessible names, swatches, state and selection action retained.
+scripts/prepare-piplup-sprite.py now writes Resources/JoeyTheme.gif as well as
+PiplupTheme.gif. Blue hues 180–240 degrees shift +75 degrees, preserving HSV
+saturation/value and all non-blue colors/alpha. Both two-frame GIFs preserve
+280ms timing and looping. Independent color check verifies only blue pixels
+changed. Build/installer copy both GIF resources; bundled checks cover both.
+
+Release build passed 365 source checks; staged/installed apps passed 369.
+Row action/accessibility harness passed; actual row rendering inspected at
+.build/piplup-menu-row.png. Live menu playback not clicked through (Computer
+Use was unavailable on preceding turn). Installed after user confirmed quit;
+signatures valid, original helper/client unchanged; app restarted (PID 24768).
+Stage: .build/interface-updates/joey-purple-sprite-helper-preserved.4k0pex9u/Inside Battery.app.
+Backup: .build/rollback-backups/interface-install.yvWKk0/Inside Battery.app.
+Build log: .build/joey-purple-sprite-build.log.
+No release/commit/push requested; local bundle metadata remains 0.2.8.
+
+## Transparent animated Piplup theme row installed — 16 October 2026
+
+User requested the source assets/piplup-sprite.gif transparent and in place of
+Piplup text. User explicitly selected frame-by-frame GIF processing to retain
+animation. Source remains unchanged. scripts/prepare-piplup-sprite.py (Pillow,
+verified with /opt/local/bin/python3.13) removes only edge-connected white and
+crops the shared sprite bounds. Output Resources/PiplupTheme.gif: 68x88, two
+frames, 280ms each, original looping. Both frames' opaque pixels/timing verified
+unchanged; white character details preserved. Default python lacks Pillow;
+MacPorts Python 3.13 has Pillow 12.2.0. Initial getdata deprecation fixed using
+get_flattened_data, and conversion verification rerun without warnings.
+
+ThemeSpriteRow uses an animated NSImageView instead of visible Piplup text,
+retaining swatches, checkmark, accessible Piplup label and selection action.
+44pt Piplup row, 30x38 sprite. Bundle resource loading reports missing/invalid
+assets explicitly during menu construction. Build/installer scripts copy GIF.
+Bundled self-tests now verify resource decoding and two animation frames.
+README/CHANGELOG updated. No release/commit/push requested.
+
+Release build passed 365 source self-checks; staged/installed bundles passed 367.
+Standalone row harness verified accessible name and theme action dispatch.
+Actual NSView light/dark render inspected: .build/piplup-menu-row.png.
+Live Computer Use inspection timed out (-10005), so live menu playback/click-through
+was not verified. User should open Themes to inspect animation in the live menu.
+Installed after user confirmed quit; signatures valid, helper/client unchanged,
+app restarted (PID 23306). Stage:
+.build/interface-updates/piplup-sprite-helper-preserved.4mrwdo9o/Inside Battery.app.
+Backup: .build/rollback-backups/interface-install.zTZVTN/Inside Battery.app.
+Build log: .build/piplup-sprite-build.log. Local bundle version remains 0.2.8;
+published 0.2.9 does not contain this new sprite row.
 
 ## Release 0.2.9 published — 13 October 2026
 

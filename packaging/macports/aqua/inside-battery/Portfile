@@ -2,7 +2,7 @@
 PortSystem          1.0
 
 name                inside-battery
-version             0.2.9
+version             0.2.10
 revision            0
 categories          aqua sysutils
 platforms           {darwin >= 22}
@@ -13,13 +13,13 @@ description         Native menu-bar battery percentage and energy modes
 long_description    "${description}. Development preview; helper approval \
                     and fresh-install switching remain unverified."
 homepage            https://github.com/JonathanLee2020/inside-battery
-master_sites        https://github.com/JonathanLee2020/inside-battery/releases/download/v0.2.9
-distname            InsideBattery-0.2.9-arm64
+master_sites        https://github.com/JonathanLee2020/inside-battery/releases/download/v0.2.10
+distname            InsideBattery-0.2.10-arm64
 worksrcdir          "Inside Battery.app"
 use_zip             yes
-checksums           rmd160 f8da53bb88d0310f992ff40c50e38141cf4c79bd \
-                    sha256 c9cb1602b5bd19f20e004fb89c7f4004fc042fbd93c4cc22f8a7a073ba4941e2 \
-                    size 1757073
+checksums           rmd160 f2ff6113e30450231db80efecf0608175ca80071 \
+                    sha256 733cdb3b5040352c0063e8619cd68464cd308869ef8ca8617b1cbd55eaac8155 \
+                    size 3283366
 use_configure       no
 build               {}
 destroot {
