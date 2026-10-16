@@ -2,7 +2,14 @@
 
 Updated: 16 October 2026. There is one app build: `dist/Inside Battery.app`.
 
-## Release 0.2.11 prepared — 16 October 2026
+## Release 0.2.11 published — 16 October 2026
+
+Published: https://github.com/JonathanLee2020/inside-battery/releases/tag/v0.2.11
+Source commit b88b1b8; tap commit 0577dd2. Release branch pushed; non-main tap
+tracking branch fast-forwarded. All five assets published; signed update-feed
+reports 0.2.11. Downloaded public ZIP matches manifest checksum; public feed bytes
+match the verified signed feed. Real local 0.2.8 SPUUpdater received and parsed
+0.2.11; no installation attempted during this diagnostic.
 
 User requested publication of Test Joey's corrected palette alignment.
 Branch release/v0.2.11; version 0.2.11/build 13. All six theme rows use the same
